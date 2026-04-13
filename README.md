@@ -18,8 +18,7 @@ If you have npm install in your working environment, simply cd in the project's 
 npm run dev
 ```
 
-
-### Docker
+### Docker
 If you don't have npm, or don't want to download it or use it, you will need docker and docker compose. Then you can run: 
 
 ```
