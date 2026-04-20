@@ -13,8 +13,10 @@ export default function UserDeck({userList }){
   }
   return (
     <Container>
-      {userList.map((user) => (
-        <div key={user.id} className="user" onClick={() => routeChange(user)}>{user.name}</div>
+      {userList.map((user, index) => (
+        <div key={index} className="user" onClick={() => routeChange(user)}>
+          {user.name}
+        </div>
       ))}
     </Container>
   );
