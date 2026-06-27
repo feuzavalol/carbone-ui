@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import UserDeck from "../components/UserDeck"
 
 const API_URL="http://localhost:8080";
@@ -12,7 +11,7 @@ function useUserList() {
   useEffect(() => {
     async function fetchUsers() {
       try {        
-        const response = await fetch("http://localhost:8080/users", {
+        const response = await fetch(`${API_URL}/users`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json"
@@ -54,7 +53,7 @@ function Users() {
   if (error) return <div>Error: {error.message}</div>;
 
   const register = async () => {
-    const payload = { username, email, password, role, committeeCategory: nameCommittee, committeeNumber: parseInt(numberCommittee) };
+    const payload = { username, email, password, role, committeeCategory: nameCommittee, committeeNumber: numberCommittee };
     console.log("Payload envoyé:", JSON.stringify(payload)); 
   
     try {
@@ -124,7 +123,7 @@ function Users() {
         </select>
         <select
           value={numberCommittee}
-          onChange={(e) => setNumberCommittee(e.target.value)}>
+          onChange={(e) => setNumberCommittee(parseInt(e.target.value))}>
           <option value="">Numéro du bureau</option>
           <option value="1">1</option>
           <option value="2">2</option>
