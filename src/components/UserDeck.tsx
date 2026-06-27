@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
 
-function Container({children}){
+function Container({ children } : {children: string}){
   return <div id="container" className='container'>{children}</div>
 }
 
-export default function UserDeck({userList }){
+export default function UserDeck({ userList }){
   let navigate = useNavigate(); 
   const routeChange = (user) =>{ 
     let path = `/users/${user.username}`; 
