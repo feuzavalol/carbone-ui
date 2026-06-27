@@ -1,0 +1,57 @@
+.transport-row {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr;
+  border: 0.5px solid #ccc;
+  border-radius: 8px;
+}
+
+/* Cells */
+.transport-cell {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 4px 10px;
+  font-size: 13px;
+}
+
+.transport-cell--border-right {
+  border-right: 0.5px solid #ccc;
+}
+
+.transport-cell--right {
+  justify-content: flex-end;
+}
+
+.transport-cell--name {
+  color: #333;
+}
+
+/* Distance input */
+.transport-distance-input {
+  width: 60px;
+  text-align: right;
+  font-size: 13px;
+  background: #424b58;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 6px;
+}
+
+.transport-unit {
+  font-size: 12px;
+  color: #888;
+  margin-left: 4px;
+}
+
+/* Carbon result cell */
+.transport-cell--result {
+  font-size: 13px;
+  font-weight: 500;
+  color: #aaa;
+  border-radius: 0 8px 8px 0;
+}
+
+.transport-cell--result-filled {
+  background: #DCFCE7;
+  color: #166534;
+}
