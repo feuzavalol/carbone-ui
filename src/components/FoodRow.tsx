@@ -1,32 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAsyncStatus } from "../fetching/ErrorHandling";
 import { FoodSearchableDropdown } from "./SearchableDropdown";
+import { useFood } from "../fetching/UseFood"
 import type { FoodRowProps, Food } from "../types/foodTypes"
 import "./Row.css";
 
 const API_URL="http://localhost:8080";
 
-export default function FoodRow({ foods }: FoodRowProps) {
-  const [selectedFood, setSelectedFood] = useState<Food | null>(null);
-  const [quantity, setQuantity] = useState<number | "">("");
-  const [carbonValue, setCarbonValue] = useState<number | null>(null);
+export default function FoodRow({ foods, data, onChange }: FoodRowProps) {
+  const { id, foodId, name, category, quantity, co2Value } = data;
+  const [ selectedFood, setSelectedFood ] = useState<Food | null>(null);
+
+  // Fetch food if the row is filled, i.e. the foodId != null
+  const { food, loading, error } = useFood(foodId || null);
+  const status = useAsyncStatus({ loading, error });
+
+  useEffect(() => {
+    if (foodId !== "" && food) {
+      setSelectedFood(food);
+    }
+  }, [foodId, food]);
+
+  if (status) return status;
+  
 
   async function handleFoodSelect(food: Food) {
     setSelectedFood(food);
-    setCarbonValue(null);
+    onChange({ name: food.name, foodId: food.id, co2Value: null });
     if (quantity !== "" && quantity > 0) {
       const result = await fetchCarbonValue(food.id, quantity);
-      setCarbonValue(result);
+      onChange({ co2Value: result });
     }
   }
 
   async function handleQuantityChange(e: React.ChangeEvent<HTMLInputElement>) {
     const qty = e.target.value === "" ? "" : parseFloat(e.target.value);
-    setQuantity(qty);
-    if (selectedFood && qty !== "" && qty > 0) {
-      const result = await fetchCarbonValue(selectedFood.id, qty);
-      setCarbonValue(result);
+    onChange({ quantity: qty });
+    if (foodId && qty !== "" && qty > 0) {
+      const result = await fetchCarbonValue(foodId, qty);
+      onChange({ co2Value: result });
     } else {
-      setCarbonValue(null);
+      onChange({ co2Value: null });
     }
   }
 
@@ -43,7 +57,7 @@ export default function FoodRow({ foods }: FoodRowProps) {
       <div className="cell cell--border-right">
         <FoodSearchableDropdown
           options={foods}
-          selected={selectedFood}
+          selectedId={selectedFood?.id}
           computeOnSelect={handleFoodSelect}
         />
       </div>
@@ -67,20 +81,22 @@ export default function FoodRow({ foods }: FoodRowProps) {
       </div>
 
       {/* Carbon value (read-only, green when filled) */}
-      <div className={`cell cell--right cell--result ${carbonValue !== null ? "cell--result-filled" : ""}`}>
-        {carbonValue !== null ? carbonValue.toFixed(1) : "—"}
+      <div className={`cell cell--right cell--result ${co2Value !== null ? "cell--result-filled" : ""}`}>
+        {co2Value !== null ? co2Value.toFixed(1) : "—"}
       </div>
 
     </div>
   );
 }
 
-async function fetchCarbonValue(foodId: number, quantity: number): Promise<number> {
-  const response = await fetch(`${API_URL}/foodCarbon?foodId=${foodId}&quantity=${quantity}`, {
-            method: "GET",
-            headers: {"Content-Type": "application/json"},
-        });
+async function fetchCarbonValue(foodId: string, quantity: number): Promise<number> {
+  const response = await fetch(`${API_URL}/foodCarbon?foodId=${foodId}&quantity=${quantity}`,
+    {
+      method: "GET",
+      headers: {"Content-Type": "application/json"},
+    });
   const data = await response.json();
-  console.log(data);
   return data.carbon_value;
 }
+
+export { FoodRow }

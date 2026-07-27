@@ -1,66 +1,79 @@
-import { useEffect, useState } from "react";
-import FoodRow from "../components/FoodRow";
-import type { Food, CompleteFood } from "../types/foodTypes"
-
-const API_URL="http://localhost:8080";
-
-// type SimplifiedFood = {
-//   name: string
-// }
-
-function useFoodList() {
-  const [foodList, setFoodList] = useState<Food[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  useEffect(() => {
-    async function fetchFood() {
-      try {        
-        const response = await fetch(`${API_URL}/food`, {
-            method: "GET",
-            headers: {"Content-Type": "application/json"},
-        });
-
-        const foods = await response.json();
-        const simplifiedFood: Food[] = foods.map((item: CompleteFood) => ({
-          id: item.id,
-          name: item.name,
-          category: item.food_group
-        }));
-        setFoodList(simplifiedFood);
-          
-        console.log(foods);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching food:", err);
-        setError(err);
-        setLoading(false);
-      }
-    }
-    
-    fetchFood();
-  }, []);
-  
-  return { foodList, loading, error };
-};
+import { useState, useEffect } from "react";
+import { useAsyncStatus } from "../fetching/ErrorHandling";
+import { FoodRow } from "../components/FoodRow";
+import { useFoodList, useSavedFoodList, saveFoodRows } from "../fetching/UseFood";
+import type { Food, FoodRowDTO } from "../types/foodTypes"
 
 export default function Food(){ 
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const committeeId: string | null = urlParams.get('id');
+  const authorId: string = "858e07f9-84a2-11f1-8a5e-1eca7b0dbe67";
+  if (committeeId == null){
+      return <div>Something went wrong when fetching the url parameter...</div>
+  }
   const { foodList, loading, error } = useFoodList();
-  const [foodRowList, setFoodRowList] = useState<typeof FoodTest[]>([]);
+  const { savedFoodList, savedFoodLoading, savedFoodError } = useSavedFoodList(committeeId, "test");
+  const [foodRowList, setFoodRowList] = useState<FoodRowDTO[]>([]);
 
-  // setFoodRowList([<FoodRow foods={foodList} />])
+  useEffect(() => {
+    if (savedFoodList) {
+      setFoodRowList(savedFoodList);
+    }
+  }, [savedFoodList]);
 
-  const FoodTest = () => {
-    return <FoodRow foods = {foodList}/>;
+  function addFoodRow() {
+    setFoodRowList((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), foodId: "", name: "", category: "", quantity: "", co2Value: null },
+    ]);
   }
 
-  const onAddButtonClick = () => {
-    setFoodRowList(foodRowList.concat(<FoodTest key={foodRowList.length} />));
-  };
+  function updateFoodRow(id: string, updates: Partial<FoodRowDTO>) {
+    setFoodRowList((prev) =>
+      prev.map((row) => (row.id === id ? { ...row, ...updates } : row))
+    );
+  }
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  async function handleSave() {
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      const savedFoodRows = await saveFoodRows(foodRowList, committeeId, authorId);
+      setFoodRowList(savedFoodRows.saved);
+      // e.g. show a success toast, reset form, etc.
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  const status = useAsyncStatus({ loading, error });
+  if (status) return status;
+
+  const savedStatus = useAsyncStatus({ loading: savedFoodLoading, error: savedFoodError });
+  if (savedStatus) return savedStatus;
+
   return ( 
-    <div> 
-      {foodRowList}
-      <button onClick={onAddButtonClick}>Add row</button>
-    </div>
+      <div>
+        {foodRowList.map((row: FoodRowDTO) => (
+          <FoodRow
+            key={row.id}
+            foods={foodList}
+            data={row}
+            onChange={(updates) => updateFoodRow(row.id, updates)}
+          />
+        ))}
+        <button onClick={addFoodRow}>Add row</button>
+        <br/>
+        <button onClick={handleSave} disabled={isSaving}>
+          {isSaving ? "Saving..." : "Save all"}
+        </button>
+        {saveError && <p className="error">{saveError}</p>}
+      </div>
   )
 }

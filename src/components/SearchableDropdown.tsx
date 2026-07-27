@@ -2,11 +2,27 @@ import { useState } from "react";
 import type { Food } from "../types/foodTypes"
 import type { Transport } from "../types/transportTypes"
 
+function findNameById(options: Food[], id: string){
+  for(const f of options){
+    if (f.id == id){
+      return f.name;
+    }
+  }
+  return options[0].name; // This case is not supposed to happen and should be changed when possible to better handle errors
+}
 
+function findById(options: Food[], id: string){
+  for(const f of options){
+    if (f.id == id){
+      return f;
+    }
+  }
+  return options[0];
+}
 
-function FoodSearchableDropdown( {options, selected, computeOnSelect}: {
+function FoodSearchableDropdown( {options, selectedId, computeOnSelect}: {
     options: Food[], 
-    selected: Food | null, 
+    selectedId: string | undefined, 
     computeOnSelect: (f: Food) => Promise<void>
     } ) {
   const [isOpen, setIsOpen]     = useState(false);
@@ -17,15 +33,15 @@ function FoodSearchableDropdown( {options, selected, computeOnSelect}: {
     o.name.toLowerCase().includes(query.toLowerCase())
   );
   var selected_name: string;
-  if (selected != null){
-    selected_name = selected.name;
-  }
-  else{
+  if (selectedId == undefined){
     selected_name = "Choose a food item...";
   }
+  else{
+    selected_name = findNameById(options,selectedId);
+  }
 
-  function handleSelect(option: Food) {
-    computeOnSelect(option); // used to compute the carbon value of this food item
+  function handleSelect(foodId: string) {
+    computeOnSelect(findById(options,foodId)); // used to compute the carbon value of this food item
     setIsOpen(false); // disable the dropdown menu to clear the space for the user
     setQuery("");
   }
@@ -52,7 +68,7 @@ function FoodSearchableDropdown( {options, selected, computeOnSelect}: {
             {filtered.length === 0
               ? <li>No results</li>
               : filtered.map(option => (
-                  <li key={option.id} onClick={() => handleSelect(option)}>
+                  <li key={option.id} onClick={() => handleSelect(option.id)}>
                     {option.name}
                   </li>
                 ))
