@@ -10,13 +10,45 @@ type CompleteFood = {
 }
 
 type Food = {
-  id: number;
-  name: string;
-  category: string;
+  id: string,
+  name: string,
+  category: string,
 };
 
-type FoodRowProps = {
+type FoodRowDTO = {
+  id: string | "", // corresponds to the food item id
+  foodId: string | "", // corresponds to the food id
+  name: string | "",
+  category: string | "", // TODO: not clear between foodgroup and category (repas 1, ...)
+  quantity: number | "",
+  co2Value: number | null
+}
+
+interface FoodRowProps {
   foods: Food[];
-};
+  data: FoodRowDTO;
+  onChange: (updates: Partial<FoodRowDTO>) => void;
+}
 
-export type { CompleteFood, Food, FoodRowProps};
+interface FoodRowData {
+  id: string;
+  selectedFood: Food | null;
+  quantity: number | "";
+  carbonValue: number | null;
+}
+
+type FoodRowPayload = {
+  id: string;
+  objectId: string;
+  authorId: string;
+  committeeId: string;
+  quantity: number;
+  category: string;
+}
+
+type FoodItemRequest = {
+  committeeId: string;
+  category: string;
+}
+
+export type { CompleteFood, Food, FoodRowProps, FoodRowDTO, FoodRowData, FoodRowPayload, FoodItemRequest };
