@@ -4,6 +4,8 @@ import Dashboard from './layouts/Dashboard'
 import Users from "./pages/Users"
 import Food from './pages/Food'
 import Transport from './pages/Transport'
+import Liste from './pages/Liste'
+import Overview from './pages/OverviewListe'
 
 function App() {
   return (
@@ -12,8 +14,11 @@ function App() {
         <Route path="/" element={<Dashboard />}>
           {/* <Route index element={<Vite />} /> */}
           <Route path="/users" element={<Users />} />
-          <Route path="/food" element={<Food />} />
-          <Route path="/transport" element={<Transport />} />
+          <Route path="/liste/food" element={<Food />} />
+          <Route path="/list/transport" element={<Transport />} />
+          <Route path="/listes" element={<Overview />} />
+          <Route path="/liste" element={<Liste />} />
+
         </Route>
       </Routes>
     </BrowserRouter>
