@@ -10,9 +10,10 @@ function Dashboard() {
           <ul>
             <li><NavLink to="/">Accueil</NavLink></li>
             <li><NavLink to="/users">Utilisateurs</NavLink></li>
-            <li><NavLink to="/food">Alimentation</NavLink></li>
+            {/* <li><NavLink to="/food">Alimentation</NavLink></li>
             <li><NavLink to="/transport">Transport</NavLink></li>
-            <li><NavLink to="/goods">Biens</NavLink></li>
+            <li><NavLink to="/goods">Biens</NavLink></li> */}
+            <li><NavLink to="/listes">Listes</NavLink></li>
           </ul>
         </nav>
         
