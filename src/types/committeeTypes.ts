@@ -1,6 +1,7 @@
 
 type Committee = {
-  category: string;
+  id: string,
+  category: string,
   number: number,
   year: number
 };
