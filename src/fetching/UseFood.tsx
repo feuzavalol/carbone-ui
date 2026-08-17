@@ -86,7 +86,7 @@ function useSavedFoodList(committeeId: string, category: string | null){
   useEffect(() => {
     async function fetchFood() {
       try {        
-        const response = await fetch(`${API_URL}/foodItem?committeeId=${committeeId}`, {
+        const response = await fetch(`${API_URL}/foodItem?committeeId=${committeeId}&category=${category}`, {
             method: "GET",
             headers: {"Content-Type": "application/json"}
         });
@@ -107,17 +107,21 @@ function useSavedFoodList(committeeId: string, category: string | null){
   return { savedFoodList, savedFoodLoading, savedFoodError };
 }
 
-function toPayload(rows: FoodRowDTO[], committeeId: string, authorId: string): FoodRowPayload[] {
-  return rows
-    .filter((row) => row.foodId !== "" && row.quantity !== "" && row.co2Value !== null) // the food and the quantity has been set to something
-    .map((row) => ({
+function rowToItemDTO(row: FoodRowDTO, committeeId: string, authorId: string){
+  return {
       id: row.id,
       objectId: row.foodId,
       authorId: authorId,
       committeeId: committeeId,
       quantity: row.quantity as number,
       category: row.category
-    }));
+    }
+}
+
+function toPayload(rows: FoodRowDTO[], committeeId: string, authorId: string): FoodRowPayload[] {
+  return rows
+    .filter((row) => row.foodId !== "" && row.quantity !== "" && row.co2Value !== null) // the food and the quantity has been set to something
+    .map((row) => rowToItemDTO(row,committeeId,authorId));
 }
 
 async function saveFoodRows(rows: FoodRowDTO[], committeeId: string, authorId: string) {
@@ -143,4 +147,26 @@ async function saveFoodRows(rows: FoodRowDTO[], committeeId: string, authorId: s
   return response.json();
 }
 
-export { useFoodList, useSavedFoodList, saveFoodRows, useFood }
+async function removeFoodRow(row: FoodRowDTO, committeeId: string, authorId: string){
+  if (row.foodId === "" || row.quantity === "" || row.co2Value === null){
+    return;
+  }
+  const removedRow = rowToItemDTO(row, committeeId, authorId);
+
+  const response = await fetch(`${API_URL}/removeFoodItems`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ item: removedRow }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null);
+    
+    throw new Error(errorBody?.message ?? `Request failed with status ${response.status}`);
+  }
+  return response;
+}
+
+export { useFoodList, useSavedFoodList, saveFoodRows, useFood, removeFoodRow }
