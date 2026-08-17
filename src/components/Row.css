@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 .row {
   display: grid;
   grid-template-columns: 3fr 2fr 1fr 1.5fr;
@@ -64,4 +66,34 @@
 .cell--result-filled {
   background: #DCFCE7;
   color: #166534;
+}
+
+/* The pop-up element */
+/* Dark semi-transparent background covering the full screen */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal container */
+.modal-content {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  min-width: 250px;
+  text-align: center;
+}
+
+/* Layout for the Cancel/Proceed buttons */
+.modal-actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
 }
