@@ -1,41 +1,5 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { type Committee } from "../types/committeeTypes"
-const API_URL="http://localhost:8080";
-
-function useCommittee(id:string) {
-  const [committee, setCommittee] = useState<Committee>({
-    category: "",
-    number: 0,
-    year: 0
-} );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  useEffect(() => {
-    async function fetchCommittee() {
-      try {        
-        const response = await fetch(`${API_URL}/committee?id=${id}`, {
-            method: "GET",
-            headers: {"Content-Type": "application/json"},
-        });
-
-        const committee = await response.json();
-        setCommittee(committee);
-        console.log(committee);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching food:", err);
-        setError(err);
-        setLoading(false);
-      }
-    }
-    
-    fetchCommittee();
-  }, []);
-  
-  return { committee, loading, error };
-};
+import { useCommittee } from "../fetching/UseCommittee";
 
 export default function Liste( ){
     let navigate = useNavigate();
@@ -51,7 +15,6 @@ export default function Liste( ){
         return <div>Something went wrong when fetching the url parameter...</div>
     }
     const {committee,loading,error} = useCommittee(id);
-    console.log(committee);
     var title: string = `${committee.category} n°${committee.number} ${committee.year}`
     return (
     <div>
