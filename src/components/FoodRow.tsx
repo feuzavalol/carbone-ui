@@ -3,9 +3,8 @@ import { useAsyncStatus } from "../fetching/ErrorHandling";
 import { FoodSearchableDropdown } from "./SearchableDropdown";
 import { useFood } from "../fetching/UseFood"
 import type { FoodRowProps, Food } from "../types/foodTypes"
+import { fetchFoodCarbonValue } from "../fetching/useCarbon";
 import "./Row.css";
-
-const API_URL="http://localhost:8080";
 
 export default function FoodRow({ foods, data, onChange }: FoodRowProps) {
   const { id, foodId, name, category, quantity, co2Value } = data;
@@ -28,7 +27,7 @@ export default function FoodRow({ foods, data, onChange }: FoodRowProps) {
     setSelectedFood(food);
     onChange({ name: food.name, foodId: food.id, co2Value: null });
     if (quantity !== "" && quantity > 0) {
-      const result = await fetchCarbonValue(food.id, quantity);
+      const result = await fetchFoodCarbonValue(food.id, quantity);
       onChange({ co2Value: result });
     }
   }
@@ -37,7 +36,7 @@ export default function FoodRow({ foods, data, onChange }: FoodRowProps) {
     const qty = e.target.value === "" ? "" : parseFloat(e.target.value);
     onChange({ quantity: qty });
     if (foodId && qty !== "" && qty > 0) {
-      const result = await fetchCarbonValue(foodId, qty);
+      const result = await fetchFoodCarbonValue(foodId, qty);
       onChange({ co2Value: result });
     } else {
       onChange({ co2Value: null });
@@ -87,16 +86,6 @@ export default function FoodRow({ foods, data, onChange }: FoodRowProps) {
 
     </div>
   );
-}
-
-async function fetchCarbonValue(foodId: string, quantity: number): Promise<number> {
-  const response = await fetch(`${API_URL}/foodCarbon?foodId=${foodId}&quantity=${quantity}`,
-    {
-      method: "GET",
-      headers: {"Content-Type": "application/json"},
-    });
-  const data = await response.json();
-  return data.carbon_value;
 }
 
 export { FoodRow }

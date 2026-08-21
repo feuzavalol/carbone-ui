@@ -1,41 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import UserDeck from "../components/UserDeck"
+import { useUserList } from "../fetching/useUsers";
 
-const API_URL="http://localhost:8080";
-
-function useUserList() {
-  const [userList, setUserList] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  useEffect(() => {
-    async function fetchUsers() {
-      try {        
-        const response = await fetch(`${API_URL}/users`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json"
-              //"Authorization": `Bearer ${token}`
-            }
-        });
-
-        const data = await response.json();
-        
-        console.log(data);
-        setUserList(data);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching users:", err);
-        setError(err);
-        setLoading(false);
-      }
-    }
-    
-    fetchUsers();
-  }, []);
-  
-  return { userList, loading, error };
-};
 
 function Users() {
   const { userList, loading, error } = useUserList();
@@ -47,39 +13,39 @@ function Users() {
   const [nameCommittee,setNameCommittee] = useState("");
   const [numberCommittee,setNumberCommittee] = useState(0);
 
-  const [token, setToken] = useState(localStorage.getItem('my_app_token') || null);
-
   if (loading) return <div>Loading users...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
-  const register = async () => {
-    const payload = { username, email, password, role, committeeCategory: nameCommittee, committeeNumber: numberCommittee };
-    console.log("Payload envoyé:", JSON.stringify(payload)); 
+  // const register = async () => {
+  //   const payload = { username, email, password, role, committeeCategory: nameCommittee, committeeNumber: numberCommittee };
+  //   console.log("Payload envoyé:", JSON.stringify(payload)); 
   
-    try {
-      const res = await fetch(`${API_URL}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+  //   try {
+  //     const res = await fetch(`${API_URL}/auth/register`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(payload)
+  //     });
 
-    if (!res.ok) {
-      console.log(res);
-      console.error("Erreur serveur:", res.status);
-      return;
-    }
+  //   if (!res.ok) {
+  //     console.log(res);
+  //     console.error("Erreur serveur:", res.status);
+  //     return;
+  //   }
 
-    const data = await res.json(); 
-    console.log(data);
+  //   const data = await res.json(); 
+  //   console.log(data);
 
-    localStorage.setItem('my_app_token', data.token);
-    setToken(data.token);
+  //   localStorage.setItem('my_app_token', data.token);
+  //   setToken(data.token);
       
 
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
+
+  const register = () => {} // TODO: Add the register action to allow admin to add new users (BRE and LIS)
 
   return (
     <>

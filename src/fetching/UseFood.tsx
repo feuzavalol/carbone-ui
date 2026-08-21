@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import type { Food, CompleteFood, FoodRowDTO, FoodRowPayload } from "../types/foodTypes";
-
-const API_URL="http://localhost:8080";
+import { API_URL } from "../constants/url";
+import { useApi } from "./useApi";
+import { useAuth } from "../auth/AuthContext";
 
 function useFood(foodId: string | null){
+  const { token } = useAuth();
   const [food, setFood] = useState<Food | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,7 +24,10 @@ function useFood(foodId: string | null){
       try {        
         const response = await fetch(`${API_URL}/singleFood?foodId=${foodId}`, {
             method: "GET",
-            headers: {"Content-Type": "application/json"},
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`
+            },
         });
 
         if(!response.ok) throw new Error(`Failed to fetch food with id=${foodId}`);
@@ -45,53 +50,48 @@ function useFood(foodId: string | null){
 }
 
 function useFoodList() {
+  const apiFetch = useApi();
   const [foodList, setFoodList] = useState<Food[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  useEffect(() => {
-    async function fetchFood() {
-      try {        
-        const response = await fetch(`${API_URL}/food`, {
-            method: "GET",
-            headers: {"Content-Type": "application/json"},
-        });
-
-        const foods = await response.json();
-        const simplifiedFood: Food[] = foods.map((item: CompleteFood) => ({
-          id: item.id,
-          name: item.name,
-          category: item.food_group
-        }));
-        setFoodList(simplifiedFood);
-        setLoading(false);
-      } catch (err: any) {
-        console.error("Error fetching food:", err);
-        setError(err);
-        setLoading(false);
+  const fetchFood = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await apiFetch(`${API_URL}/food`);
+      const foods = await response.json();
+      const simplifiedFood: Food[] = foods.map((item: CompleteFood) => ({
+        id: item.id,
+        name: item.name,
+        category: item.food_group
+      }));
+      setFoodList(simplifiedFood);
+      setLoading(false);
+    } catch (err: any) {
+      console.error("Error fetching food:", err);
+      setError(err);
+      setLoading(false);
       }
-    }
-    
+  }, [apiFetch]);
+
+  useEffect(() => {
     fetchFood();
-  }, []);
+  }, [fetchFood]);
   
   return { foodList, loading, error };
 };
 
 function useSavedFoodList(committeeId: string, category: string | null){
+  const apiFetch = useApi();
   const [savedFoodList, setSavedFoodList] = useState<FoodRowDTO[]>([]);
   const [savedFoodLoading, setSavedFoodLoading] = useState(true);
   const [savedFoodError, setSavedFoodError] = useState(null);
   
-  useEffect(() => {
-    async function fetchFood() {
-      try {        
-        const response = await fetch(`${API_URL}/foodItem?committeeId=${committeeId}&category=${category}`, {
-            method: "GET",
-            headers: {"Content-Type": "application/json"}
-        });
-
-        const foods = await response.json();
+  const fetchFood = useCallback(async () => {
+    try {
+      setSavedFoodLoading(true);
+      const response = await apiFetch(`${API_URL}/foodItem?committeeId=${committeeId}&category=${category}`);
+      const foods = await response.json();
         setSavedFoodList(foods);
         setSavedFoodLoading(false);
       } catch (err: any) {
@@ -99,10 +99,11 @@ function useSavedFoodList(committeeId: string, category: string | null){
         setSavedFoodError(err);
         setSavedFoodLoading(false);
       }
-    }
-    
+  }, [apiFetch, committeeId, category]);
+
+  useEffect(() => {
     fetchFood();
-  }, []);
+  }, [fetchFood]);
   
   return { savedFoodList, savedFoodLoading, savedFoodError };
 }
@@ -125,6 +126,7 @@ function toPayload(rows: FoodRowDTO[], committeeId: string, authorId: string): F
 }
 
 async function saveFoodRows(rows: FoodRowDTO[], committeeId: string, authorId: string) {
+  const { token } = useAuth();
   const payload = toPayload(rows, committeeId, authorId);
 
   if (payload.length === 0) {
@@ -135,6 +137,7 @@ async function saveFoodRows(rows: FoodRowDTO[], committeeId: string, authorId: s
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
     },
     body: JSON.stringify({ items: payload }),
   });
@@ -151,12 +154,14 @@ async function removeFoodRow(row: FoodRowDTO, committeeId: string, authorId: str
   if (row.foodId === "" || row.quantity === "" || row.co2Value === null){
     return;
   }
+  const { token } = useAuth();
   const removedRow = rowToItemDTO(row, committeeId, authorId);
 
   const response = await fetch(`${API_URL}/removeFoodItems`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
     },
     body: JSON.stringify({ item: removedRow }),
   });

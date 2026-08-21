@@ -1,8 +1,7 @@
 import { useState } from "react";
 import type { TransportRowProps } from "../types/transportTypes";
+import { fetchTransportCarbonValue } from "../fetching/useCarbon";
 import "./TransportRow.css";
-
-const API_URL = "http://localhost:8080";
 
 
 export default function TransportRow({ transport }: TransportRowProps) {
@@ -13,7 +12,7 @@ export default function TransportRow({ transport }: TransportRowProps) {
     const dist = e.target.value === "" ? "" : parseFloat(e.target.value);
     setDistance(dist);
     if (dist !== "" && dist > 0) {
-      const result = await fetchCarbonValue(transport.id, dist);
+      const result = await fetchTransportCarbonValue(transport.id, dist);
       setCarbonValue(result);
     } else {
       setCarbonValue(null);
@@ -49,13 +48,4 @@ export default function TransportRow({ transport }: TransportRowProps) {
 
     </div>
   );
-}
-
-async function fetchCarbonValue(transportId: number, distance: number): Promise<number> {
-  const response = await fetch(`${API_URL}/transportCarbon?transportId=${transportId}&distance=${distance}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-  const data = await response.json();
-  return data.carbon_value;
 }
