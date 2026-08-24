@@ -125,9 +125,9 @@ function toPayload(rows: FoodRowDTO[], committeeId: string, authorId: string): F
     .map((row) => rowToItemDTO(row,committeeId,authorId));
 }
 
-async function saveFoodRows(rows: FoodRowDTO[], committeeId: string, authorId: string) {
-  const { token } = useAuth();
+async function saveFoodRows(rows: FoodRowDTO[], committeeId: string, authorId: string, token: string) {
   const payload = toPayload(rows, committeeId, authorId);
+  console.log("payload:", payload);
 
   if (payload.length === 0) {
     throw new Error("No valid food rows to save.");
@@ -146,15 +146,14 @@ async function saveFoodRows(rows: FoodRowDTO[], committeeId: string, authorId: s
     const errorBody = await response.json().catch(() => null);
     throw new Error(errorBody?.message ?? `Request failed with status ${response.status}`);
   }
-
+  console.log(response)
   return response.json();
 }
 
-async function removeFoodRow(row: FoodRowDTO, committeeId: string, authorId: string){
+async function removeFoodRow(row: FoodRowDTO, committeeId: string, authorId: string, token: string){
   if (row.foodId === "" || row.quantity === "" || row.co2Value === null){
     return;
   }
-  const { token } = useAuth();
   const removedRow = rowToItemDTO(row, committeeId, authorId);
 
   const response = await fetch(`${API_URL}/removeFoodItems`, {
