@@ -23,13 +23,13 @@
 }
 
 .transport-cell--name {
-  color: #333;
+  color: #9e9e9e;
 }
 
 /* Distance input */
 .transport-distance-input {
   width: 60px;
-  text-align: right;
+  text-align: center;
   font-size: 13px;
   background: #424b58;
   border: none;
@@ -39,7 +39,7 @@
 
 .transport-unit {
   font-size: 12px;
-  color: #888;
+  color: #9e9e9e;
   margin-left: 4px;
 }
 

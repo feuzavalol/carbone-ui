@@ -1,0 +1,17 @@
+.transport-grid-container{
+    text-align:center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 2fr 1fr;
+    gap: 1em;
+    grid-template-areas: 
+    "outsider cars"
+    "party cars";
+}
+
+.transport-input {
+    text-align: center;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}

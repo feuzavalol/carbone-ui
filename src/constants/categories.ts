@@ -39,9 +39,7 @@ function convertFoodCategoryToDisplay(category: string){
         case "activities":
             return "Activités";
         default:
-
-
     }
 }
 
-export { FoodCategories, convertFoodCategoryToDisplay, convertCategoryToDisplay}
+export { FoodCategories, convertFoodCategoryToDisplay, convertCategoryToDisplay }

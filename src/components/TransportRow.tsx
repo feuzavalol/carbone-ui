@@ -5,15 +5,17 @@ import "./TransportRow.css";
 
 
 export default function TransportRow({ transport }: TransportRowProps) {
-  const [distance, setDistance] = useState<number | "">("");
-  const [carbonValue, setCarbonValue] = useState<number | null>(null);
+  const [distance, setDistance] = useState<number | string>(transport.distance);
+  const [carbonValue, setCarbonValue] = useState<number | null>(transport.co2Value);
 
   async function handleDistanceChange(e: React.ChangeEvent<HTMLInputElement>) {
     const dist = e.target.value === "" ? "" : parseFloat(e.target.value);
     setDistance(dist);
+    transport.distance = dist;
     if (dist !== "" && dist > 0) {
-      const result = await fetchTransportCarbonValue(transport.id, dist);
+      const result = await fetchTransportCarbonValue(transport.transportId, dist);
       setCarbonValue(result);
+      transport.co2Value = result;
     } else {
       setCarbonValue(null);
     }
