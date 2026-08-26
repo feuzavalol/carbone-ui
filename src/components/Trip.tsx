@@ -63,7 +63,7 @@ function ModeOfTransportation({ isBus, trip }:
 
   function handleSelectEnergy(newEnergy: SingleValue<CustomOption>) {
     setSelectedEnergy(newEnergy?.label != undefined ? toOption(newEnergy?.label) : null);
-    setSelectedUnit(getUnit(newEnergy?.label));
+    setSelectedUnit(newEnergy?.label != undefined ? getUnit(newEnergy.label) : "");
   }
 
   return (
