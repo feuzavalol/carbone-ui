@@ -10,7 +10,7 @@ async function fetchFoodCarbonValue(foodId: string, quantity: number): Promise<n
   return data.carbon_value;
 }
 
-async function fetchTransportCarbonValue(transportId: number, distance: number): Promise<number> {
+async function fetchTransportCarbonValue(transportId: string, distance: number): Promise<number> {
   const response = await fetch(`${API_URL}/transportCarbon?transportId=${transportId}&distance=${distance}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
