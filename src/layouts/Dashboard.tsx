@@ -8,11 +8,9 @@ function Dashboard() {
         <nav className="navbar">
           <h1>Outil carbone des Mines</h1>
           <ul>
-            <li><NavLink to="/login">Accueil</NavLink></li>
+            <li><NavLink to="/home">Accueil</NavLink></li>
+            <li><NavLink to="/login">Se connecter</NavLink></li>
             <li><NavLink to="/users">Utilisateurs</NavLink></li>
-            {/* <li><NavLink to="/food">Alimentation</NavLink></li>
-            <li><NavLink to="/transport">Transport</NavLink></li>
-            <li><NavLink to="/goods">Biens</NavLink></li> */}
             <li><NavLink to="/listes">Listes</NavLink></li>
           </ul>
         </nav>
