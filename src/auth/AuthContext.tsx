@@ -2,32 +2,11 @@ import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 import { jwtDecode } from "jwt-decode";
 import { loginRequest } from "./authApi";
-import type { Role } from "../constants/roles";
-
-
-
-interface DecodedToken {
-  sub: string; // email, since that's what we set as the JWT subject
-  role: Role;
-  exp: number; // expiration date
-  iat: number; 
-}
-
-interface AuthUser {
-  email: string;
-  role: Role;
-}
-
-interface AuthContextValue {
-  token: string | null;
-  user: AuthUser | null;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-}
+import type { AuthContextValue, AuthUser, DecodedToken } from "../types/authTypes";
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function decodeJwt(token: string): AuthUser {
+export function decodeJwt(token: string): AuthUser {
   const decoded = jwtDecode<DecodedToken>(token);
   return { email: decoded.sub, role: decoded.role };
 }
