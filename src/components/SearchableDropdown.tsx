@@ -1,3 +1,5 @@
+// Deprecated
+
 import { useState } from "react";
 import type { Food } from "../types/foodTypes"
 import type { Transport } from "../types/transportTypes"
