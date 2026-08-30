@@ -1,13 +1,16 @@
 import { useState, useEffect, useMemo } from "react";
 import Select from "react-select";
 import type { Food } from "../types/foodTypes";
+import type { Good } from "../types/goodsTypes"
+
+type Object = Food | Good
 
 type CustomOption = {
-  value: Food,
+  value: Object,
   label: string
 }
 
-function convertFoodToCustomOption(f: Food){
+function convertObjectToCustomOption(f: Object){
   const opt : CustomOption = {
     value: f,
     label: f.name
@@ -15,40 +18,40 @@ function convertFoodToCustomOption(f: Food){
   return opt
 }
 
-function toCustomOption(l:Food[]){
-  return l.map((f:Food) => convertFoodToCustomOption(f));
+function toCustomOption(l:Object[]){
+  return l.map((f:Object) => convertObjectToCustomOption(f));
 }
 
-function FoodSearchableDropdown( {options, selectedFood, computeOnSelect}: {
-    options: Food[], 
-    selectedFood: Food | null, 
-    computeOnSelect: (f: Food) => Promise<void>
+function ObjectSearchableDropdown( {options, selectedObject, computeOnSelect}: {
+    options: Object[], 
+    selectedObject: Object | null, 
+    computeOnSelect: (f: Object) => Promise<void>
     } ) {
   
-  const [displayedSelectedFood, setDisplayedSelectedFood] = useState<CustomOption | null>(null);
+  const [displayedSelectedObject, setDisplayedSelectedObject] = useState<CustomOption | null>(null);
 
-  const foodOptions = useMemo(() => toCustomOption(options), [options]);
-  function handleSelect(foodOption: CustomOption) {
-    setDisplayedSelectedFood(foodOption);
-    computeOnSelect(foodOption.value); // used to compute the carbon value of this food item
+  const objectOptions = useMemo(() => toCustomOption(options), [options]);
+  function handleSelect(objectOption: CustomOption) {
+    setDisplayedSelectedObject(objectOption);
+    computeOnSelect(objectOption.value); // used to compute the carbon value of this object item
   }
 
   useEffect(() => {
-      if (selectedFood != null){
-        setDisplayedSelectedFood(convertFoodToCustomOption(selectedFood));
+      if (selectedObject != null){
+        setDisplayedSelectedObject(convertObjectToCustomOption(selectedObject));
       }
-    }, [selectedFood]);
+    }, [selectedObject]);
   
   
   return (
     <div style={{ position: "relative", width: 280 }}>
         <Select
-            options={foodOptions}
-            value={displayedSelectedFood}
+            options={objectOptions}
+            value={displayedSelectedObject}
             onChange={handleSelect}
         />
     </div>
   );
 }
 
-export { FoodSearchableDropdown }
+export { ObjectSearchableDropdown }
