@@ -7,6 +7,7 @@ import TransportParty from "../components/Party";
 import Cars from "../components/Cars";
 import type { Transport, TransportRowDTO } from "../types/transportTypes"
 import "./Transport.css"
+import { jwtDecode } from "jwt-decode";
 // type SimplifiedTransport = {
 //   name: string
 // }
@@ -16,13 +17,15 @@ export default function Transport(){
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const fetchedCommitteeId: string | null = urlParams.get('id');
-  const authorId: string = "858e07f9-84a2-11f1-8a5e-1eca7b0dbe67";
+  
   const { token } = useAuth();
+  
   
   if (token == null){
     return <div>You lost connection. You might want to relogin before doing this action.</div>
   }
   const safeToken = token;
+  const authorId: string = jwtDecode(safeToken).id;
 
   if (fetchedCommitteeId == null){
       return <div>Something went wrong when fetching the url parameter...<br/>The committee id parameter doesn't seem to be present</div>

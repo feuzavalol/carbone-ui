@@ -6,6 +6,7 @@ import { useFoodList, useSavedFoodList, saveFoodRows, removeFoodRow } from "../f
 import type { Food, FoodRowDTO } from "../types/foodTypes"
 import { convertFoodCategoryToDisplay } from "../constants/categories";
 import TrashIcon from "../assets/trash.png"
+import { jwtDecode } from "jwt-decode";
 
 
 
@@ -15,13 +16,13 @@ export default function Food(){
 
   const fetchedCommitteeId: string | null = urlParams.get('id');
   const fetchedFoodCategory: string | null = urlParams.get('category');
-  const authorId: string = "858e07f9-84a2-11f1-8a5e-1eca7b0dbe67";
   const { token } = useAuth();
   
   if (token == null){
     return <div>You lost connection. You might want to relogin before doing this action.</div>
   }
   const safeToken = token;
+  const authorId: string = jwtDecode(safeToken).id;
 
   if (fetchedCommitteeId == null){
       return <div>Something went wrong when fetching the url parameter...<br/>The committee id parameter doesn't seem to be present</div>
@@ -49,7 +50,7 @@ export default function Food(){
   const handleCancel = () => setIsOpen(false);
 
   useEffect(() => {
-    console.log("savedFoodList a changé", savedFoodList);
+    // console.log("savedFoodList a changé", savedFoodList);
     if (savedFoodList) {
       setFoodRowList(savedFoodList);
     }
@@ -76,14 +77,14 @@ export default function Food(){
   const [removedItem, setRemovedItem] = useState<FoodRowDTO | null>(null);
 
   async function handleSave() {
-    console.log("foodRowList: ",foodRowList);
+    // console.log("foodRowList: ",foodRowList);
     setIsSaving(true);
     setSaveError(null);
     try {
       const savedFoodRows = await saveFoodRows(foodRowList, committeeId, authorId, safeToken);
-      console.log("saving successful");
+      // console.log("saving successful");
       setFoodRowList(savedFoodRows.saved);
-      console.log("set the new list successful");
+      // console.log("set the new list successful");
       // e.g. show a success toast, reset form, etc.
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Something went wrong.");
