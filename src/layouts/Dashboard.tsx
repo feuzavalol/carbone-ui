@@ -10,7 +10,7 @@ function Dashboard() {
           <ul>
             <li><NavLink to="/home">Accueil</NavLink></li>
             <li><NavLink to="/login">Se connecter</NavLink></li>
-            <li><NavLink to="/users">Utilisateurs</NavLink></li>
+            {/* <li><NavLink to="/users">Utilisateurs</NavLink></li> */}
             <li><NavLink to="/listes">Listes</NavLink></li>
           </ul>
         </nav>
