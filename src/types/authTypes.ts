@@ -2,7 +2,9 @@ import type { Role } from "../constants/roles";
 
 interface DecodedToken {
   sub: string; // email, since that's what we set as the JWT subject
+  id: string;
   role: Role;
+  committeeId: string;
   exp: number; // expiration date
   iat: number; 
 }
@@ -10,6 +12,8 @@ interface DecodedToken {
 interface AuthUser {
   email: string;
   role: Role;
+  committeeId: string;
+  id: string;
 }
 
 interface AuthContextValue {

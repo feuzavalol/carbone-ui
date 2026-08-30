@@ -8,7 +8,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function decodeJwt(token: string): AuthUser {
   const decoded = jwtDecode<DecodedToken>(token);
-  return { email: decoded.sub, role: decoded.role };
+  return { id: decoded.id, email: decoded.sub, role: decoded.role, committeeId: decoded.committeeId };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -16,7 +16,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
 
   const login = async (email: string, password: string): Promise<void> => {
-    const jwt = await loginRequest(email, password); // the function from block 1
+    const jwt = await loginRequest(email, password); 
     setToken(jwt);
     setUser(decodeJwt(jwt));
   };
