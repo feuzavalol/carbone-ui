@@ -92,13 +92,14 @@ function useSavedFoodList(committeeId: string, category: string | null){
       setSavedFoodLoading(true);
       const response = await apiFetch(`${API_URL}/foodItem?committeeId=${committeeId}&category=${category}`);
       const foods = await response.json();
-        setSavedFoodList(foods);
-        setSavedFoodLoading(false);
-      } catch (err: any) {
-        console.error("Error fetching food:", err);
-        setSavedFoodError(err);
-        setSavedFoodLoading(false);
-      }
+      // ("saved :",foods.success);
+      setSavedFoodList(foods.success);
+      setSavedFoodLoading(false);
+    } catch (err: any) {
+      console.error("Error fetching food:", err);
+      setSavedFoodError(err);
+      setSavedFoodLoading(false);
+    }
   }, [apiFetch, committeeId, category]);
 
   useEffect(() => {
@@ -127,7 +128,7 @@ function toPayload(rows: FoodRowDTO[], committeeId: string, authorId: string): F
 
 async function saveFoodRows(rows: FoodRowDTO[], committeeId: string, authorId: string, token: string) {
   const payload = toPayload(rows, committeeId, authorId);
-  console.log("payload:", payload);
+  // console.log("payload:", payload);
 
   if (payload.length === 0) {
     throw new Error("No valid food rows to save.");
@@ -146,7 +147,7 @@ async function saveFoodRows(rows: FoodRowDTO[], committeeId: string, authorId: s
     const errorBody = await response.json().catch(() => null);
     throw new Error(errorBody?.message ?? `Request failed with status ${response.status}`);
   }
-  console.log(response)
+  // console.log(response)
   return response.json();
 }
 

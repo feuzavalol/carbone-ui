@@ -13,8 +13,9 @@ function useTransportList(committeeId: string) {
     try {
       setLoading(true);
       const response = await apiFetch(`${API_URL}/transportItem?committeeId=${committeeId}`);
-      const transports: TransportRowDTO[] = await response.json();
-      setTransportList(transports);
+      const transports = await response.json();
+      // console.log("success",transports.success);
+      setTransportList(transports.success);
       setLoading(false);
       } 
     catch (err: any) {
@@ -68,7 +69,7 @@ async function saveTransportRows(rows: TransportRowDTO[], committeeId: string, a
     const errorBody = await response.json().catch(() => null);
     throw new Error(errorBody?.message ?? `Request failed with status ${response.status}`);
   }
-  console.log(response)
+  // console.log(response)
   return response.json();
 }
 
