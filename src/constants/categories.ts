@@ -42,4 +42,8 @@ function convertFoodCategoryToDisplay(category: string){
     }
 }
 
-export { FoodCategories, convertFoodCategoryToDisplay, convertCategoryToDisplay }
+const GoodCategories = ["Goodies","Vêtements","Décorations","Tabac"];
+
+export { convertCategoryToDisplay }
+export { FoodCategories, convertFoodCategoryToDisplay }
+export { GoodCategories }
