@@ -1,11 +1,11 @@
 import { memo } from "react";
 import { useState, useEffect } from "react";
 import { useAsyncStatus } from "../fetching/ErrorHandling";
-import { FoodSearchableDropdown } from "./Dropdown";
+import { ObjectSearchableDropdown } from "./Dropdown";
 import { useFood } from "../fetching/UseFood"
 import type { FoodRowProps, Food } from "../types/foodTypes"
 import { fetchFoodCarbonValue } from "../fetching/useCarbon";
-import "./Row.css";
+import "./style/Row.css";
 
 function FoodRow({ foods, data, onChange }: FoodRowProps) {
   const { id, foodId, name, category, quantity, co2Value } = data;
@@ -55,9 +55,9 @@ function FoodRow({ foods, data, onChange }: FoodRowProps) {
 
       {/* Food dropdown */}
       <div className="cell cell--border-right">
-        <FoodSearchableDropdown
+        <ObjectSearchableDropdown
           options={foods}
-          selectedFood={selectedFood}
+          selectedObject={selectedFood}
           computeOnSelect={handleFoodSelect}
         />
       </div>

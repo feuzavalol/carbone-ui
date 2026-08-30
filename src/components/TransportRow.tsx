@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { TransportRowProps } from "../types/transportTypes";
 import { fetchTransportCarbonValue } from "../fetching/useCarbon";
-import "./TransportRow.css";
+import "./style/TransportRow.css";
 
 
 export default function TransportRow({ transport }: TransportRowProps) {

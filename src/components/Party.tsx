@@ -1,6 +1,6 @@
 import { Grid } from "../layouts/HelpCSS";
 import { ModeOfTransportation, PlaceSelect } from "./Trip";
-import './Party.css'
+import './style/Party.css'
 
 export default function TransportParty() {
   return (
