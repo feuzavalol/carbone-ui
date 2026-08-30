@@ -45,8 +45,8 @@ function ModeOfTransportation({ isBus, trip }:
   let fetchedNumberRoundTrip: number = 0; 
   let energy: Energy | EnergyCategories = "";
   let unit: string = getUnit(energy); 
-  console.log("La valeur du boolean d'avant :",trip != undefined);
-  console.log(trip);
+  // console.log("La valeur du boolean d'avant :",trip != undefined);
+  // console.log(trip);
   if (trip != undefined){
     fetchedEnergyConsumption = trip.energyUsage.consumption;
     fetchedNumberRoundTrip = trip.quantity; 
