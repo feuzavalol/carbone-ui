@@ -1,34 +1,61 @@
+// This page is used to register users when you're an admin user
+
 import { useState } from "react";
+import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import { baseRegisterRequest } from "../auth/authApi";
+import { adminRegisterRequest } from "../auth/authApi";
+import { type Role, type CommitteeCategory, NumberNeedingCategories, Roles, CommitteeCategories } from "../constants/roles";
+import type { SingleValue } from "react-select";
 
-type Mode = "login" | "register";
+type Object = Role | CommitteeCategory
 
-export function LoginPage() {
-  const { login } = useAuth();
-  const navigate = useNavigate();
+type CustomOption = {
+  value: Object,
+  label: string
+}
 
-  const [mode, setMode] = useState<Mode>("login");
+function customOptionOf(f: Object){
+  const opt : CustomOption = {
+    value: f,
+    label: f
+  }
+  return opt
+}
+
+function toCustomOption(l:Object[]){
+  return l.map((f:Object) => customOptionOf(f));
+}
+
+export function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [committee, setCommittee] = useState<CustomOption | null>(null); 
+  const [role, setRole] = useState<CustomOption | null>(null);
+  const [number, setNumber] = useState<number>();
+  const year = 2025; // TODO: change to be dynamically picked
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const roleOptions = toCustomOption(Roles);
+  const committeeOptions = toCustomOption(CommitteeCategories)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
-      if (mode === "login"){
-        await login(email, password);
-        navigate("/home");
-      }
-      else{
-        await baseRegisterRequest(name, email, password);
-        navigate("/home");
-      }
+        if (role == undefined){
+            throw new Error("Le champ 'role' manque.");
+        }
+        if (committee == undefined){
+            throw new Error("Le champ 'association' manque");
+        }
+        if (NumberNeedingCategories.includes(committee.value) && number == undefined){
+            throw new Error("Le champ 'numéro' manque");
+        }
+        await adminRegisterRequest(name, email, password, role.value, committee.value, year, number);
     } catch (err) {
         setError("L'email ou le mot de passe sont incorrects");
     } finally {
@@ -36,48 +63,35 @@ export function LoginPage() {
     }
   };
 
-  const resetFeedback = () => {
-    setError(null);
-  };
+  function handleRoleSelect(newRole: SingleValue<CustomOption>){
+    setRole(newRole?.label != undefined ? customOptionOf(newRole?.value) : null);
+  }
 
-  const switchMode = (next: Mode) => {
-    setMode(next);
-    resetFeedback();
-  };
+  function handleCommitteeSelect(newCommittee: SingleValue<CustomOption>){
+    setCommittee(newCommittee?.label != undefined ? customOptionOf(newCommittee?.value) : null);
+  }
+
+  const isListeux: boolean = role?.value == "LIS";
+  const needNumber: boolean = committee ? NumberNeedingCategories.includes(committee.value) : false
 
   return (
     <div style={styles.page}>
       <div style={styles.card}>
         <div style={styles.tabs}>
-          <button
-            type="button"
-            onClick={() => switchMode("login")}
-            style={mode === "login" ? styles.tabActive : styles.tab}
-          >
-            Log in
-          </button>
-          <button
-            type="button"
-            onClick={() => switchMode("register")}
-            style={mode === "register" ? styles.tabActive : styles.tab}
-          >
             Register
-          </button>
         </div>
 
         <form onSubmit={handleSubmit} style={styles.form}>
-          {mode === "register" && (
             <label style={styles.label}>
-              Name
-              <input
+                Name
+                <input
                 style={styles.input}
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-              />
+                />
             </label>
-          )}
 
           <label style={styles.label}>
             Email
@@ -99,13 +113,48 @@ export function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
               minLength={8}
             />
           </label>
 
+          <label style={styles.label}>
+            Rôle
+            <Select
+                options={roleOptions}
+                value={role}
+                onChange={(newRole) => handleRoleSelect(newRole)}
+                required
+            />
+          </label>
+          {isListeux && <label style={styles.label}>
+            Association
+            <Select
+                options={committeeOptions}
+                value={committee}
+                onChange={(newCommittee) => handleCommitteeSelect(newCommittee)}
+                required
+            />
+          </label>
+          }
+          { needNumber && 
+            <label style={styles.label}>
+                Numéro
+                <input
+                style={styles.input}
+                type="number"
+                value={number}
+                min={0}
+                max={4}
+                step={1}
+                onChange={(e) => {console.log(parseInt(e.target.value)); setNumber(parseInt(e.target.value))}}
+                required
+                />
+            </label>
+
+          }
+
           <button type="submit" disabled={loading} style={styles.submit}>
-            {loading ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}
+            {loading ? "Please wait…" : "Create account"}
           </button>
         </form>
 
