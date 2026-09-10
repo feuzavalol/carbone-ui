@@ -15,8 +15,6 @@ function convertCategoryToDisplay(label: string){
     }
 }
 
-const FoodCategories = ["meal1","meal2","meal3","meal4",
-                        "breakfast1","breakfast2","party","call","activities"];
 
 function convertFoodCategoryToDisplay(category: string){
     switch (category){
@@ -39,11 +37,12 @@ function convertFoodCategoryToDisplay(category: string){
         case "activities":
             return "Activités";
         default:
+            return category;
     }
 }
 
 const GoodCategories = ["Goodies","Vêtements","Décorations","Tabac"];
 
 export { convertCategoryToDisplay }
-export { FoodCategories, convertFoodCategoryToDisplay }
+export { convertFoodCategoryToDisplay }
 export { GoodCategories }

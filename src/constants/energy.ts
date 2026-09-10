@@ -3,23 +3,27 @@ type Energy = "Essence" | "Diesel" | "Hybride" | "Électrique" | "";
 type Unit = "L/100km" | "W" | ""; // TODO: Add other units
 
 
-function convertEnergyCategoryToDisplay(category: EnergyCategories | Energy): Energy{
+function convertEnergyCategoryToDisplay(category: string): Energy{
     switch (category){
         case "oil":
+        case "Essence":
             return "Essence";
         case "diesel":
+        case "Diesel": 
             return "Diesel";
         case "hybrid":
+        case "Hybride":
             return "Hybride";
         case "electric":
+        case "Électrique":
             return "Électrique";
         case "":
         default:
-            return category;
+            return "";
     }
 }
 
-function getUnit(category: EnergyCategories | Energy): Unit{
+function getUnit(category: EnergyCategories | Energy | string): Unit{
     switch (category){
         case "oil":
         case "Essence":
@@ -38,7 +42,7 @@ function getUnit(category: EnergyCategories | Energy): Unit{
     }
 }
 
-const energyOptions = [{ name: "Essence" }, { name: "Diesel" }, { name: "Hybride" }, { name: "Électrique" }];
+const energyOptions = [{id:1, name:"Essence"},{id:2, name:"Diesel"},{id:3, name:"Hybride"},{id:4, name:"Électrique"}];
 
 export type { EnergyCategories, Energy }
 export { energyOptions, convertEnergyCategoryToDisplay, getUnit }

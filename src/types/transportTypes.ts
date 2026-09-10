@@ -38,16 +38,34 @@ type TransportRowPayload = {
   distance: number;
 }
 
-type Trip = {
-  id: string,
-  energyUsage: EnergyUsage
-  quantity: number
-}
-
 type EnergyUsage = {
   consumption: number,
   energy: Energy | EnergyCategories
-  unit: string
 }
 
-export type { CompleteTransport, Transport, TransportRowDTO, TransportRowProps, TransportRowPayload, Trip, EnergyUsage };
+type TripRowDTO = {
+  id: string,
+  routeId: string | null,
+  usageId: string, 
+  energy: Energy | EnergyCategories, 
+  consumption: number, 
+  quantity: number, 
+  comment: string | null
+}
+
+type TripRowPayload = {
+  id: string, 
+  authorId: string,
+  committeeId: string,
+  usageId: string,  
+  quantity: number,  
+  energy: Energy | EnergyCategories,  
+  consumption: number,  
+  routeId: string | null,  
+  comment: string
+}
+
+
+
+export type { CompleteTransport, Transport, TransportRowDTO, TransportRowProps, TransportRowPayload};
+export type { EnergyUsage, TripRowDTO, TripRowPayload };

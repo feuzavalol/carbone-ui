@@ -19,7 +19,7 @@ type FoodRowDTO = {
   id: string | "", // corresponds to the food item id
   foodId: string | "", // corresponds to the food id
   name: string | "",
-  category: string | "", // TODO: not clear between foodgroup and category (repas 1, ...)
+  categoryId: string | "", // the id of the category used
   quantity: number | "",
   co2Value: number | null
 }
@@ -43,7 +43,7 @@ type FoodRowPayload = {
   authorId: string;
   committeeId: string;
   quantity: number;
-  category: string;
+  categoryId: string;
 }
 
 type FoodItemRequest = {
@@ -51,4 +51,10 @@ type FoodItemRequest = {
   category: string;
 }
 
-export type { CompleteFood, Food, FoodRowProps, FoodRowDTO, FoodRowData, FoodRowPayload, FoodItemRequest };
+type FoodCategory = {
+  id: string,
+  name: string,
+  isListe: boolean
+}
+
+export type { CompleteFood, Food, FoodRowProps, FoodRowDTO, FoodRowData, FoodRowPayload, FoodItemRequest, FoodCategory };
