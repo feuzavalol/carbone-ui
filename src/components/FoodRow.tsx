@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { useState, useEffect } from "react";
+import { useAuth } from "../auth/AuthContext";
 import { useAsyncStatus } from "../fetching/ErrorHandling";
 import { ObjectSearchableDropdown } from "./Dropdown";
 import { useFood } from "../fetching/UseFood"
@@ -8,8 +9,9 @@ import { fetchFoodCarbonValue } from "../fetching/useCarbon";
 import "./style/Row.css";
 
 function FoodRow({ foods, data, onChange }: FoodRowProps) {
-  const { id, foodId, name, category, quantity, co2Value } = data;
+  const { id, foodId, name, categoryId, quantity, co2Value } = data;
   const [ selectedFood, setSelectedFood ] = useState<Food | null>(null);
+  const { token } = useAuth();
 
   // Fetch food if the row is filled, i.e. the foodId != null
   const { food, loading, error } = useFood(foodId || null);
@@ -22,13 +24,17 @@ function FoodRow({ foods, data, onChange }: FoodRowProps) {
   }, [foodId, food]);
 
   if (status) return status;
+  if (token == null){
+    return <div>You're not logged in correctly...</div>
+  }
+  const safeToken: string = token;
   
 
   async function handleFoodSelect(food: Food) {
     setSelectedFood(food);
     onChange({ name: food.name, foodId: food.id, co2Value: null });
     if (quantity !== "" && quantity > 0) {
-      const result = await fetchFoodCarbonValue(food.id, quantity);
+      const result = await fetchFoodCarbonValue(food.id, quantity, safeToken);
       onChange({ co2Value: result });
     }
   }
@@ -37,7 +43,7 @@ function FoodRow({ foods, data, onChange }: FoodRowProps) {
     const qty = e.target.value === "" ? "" : parseFloat(e.target.value);
     onChange({ quantity: qty });
     if (foodId && qty !== "" && qty > 0) {
-      const result = await fetchFoodCarbonValue(foodId, qty);
+      const result = await fetchFoodCarbonValue(foodId, qty, safeToken);
       onChange({ co2Value: result });
     } else {
       onChange({ co2Value: null });

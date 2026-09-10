@@ -1,65 +1,82 @@
 import { useState, useEffect } from "react";
 import { useAsyncStatus } from "../fetching/ErrorHandling";
-import { useAuth } from "../auth/AuthContext";
+import { decodeJwt, useAuth } from "../auth/AuthContext";
 import FoodRow from "../components/FoodRow";
-import { useFoodList, useSavedFoodList, saveFoodRows, removeFoodRow } from "../fetching/UseFood";
+import { useFoodList, useSavedFoodList, saveFoodRows, removeFoodRow, useFoodCategory } from "../fetching/UseFood";
 import type { Food, FoodRowDTO } from "../types/foodTypes"
 import { convertFoodCategoryToDisplay } from "../constants/categories";
-import TrashIcon from "../assets/trash.png"
-import { jwtDecode } from "jwt-decode";
-
-
+import TrashIcon from "../assets/trash.png";
 
 export default function Food(){ 
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
 
   const fetchedCommitteeId: string | null = urlParams.get('id');
-  const fetchedFoodCategory: string | null = urlParams.get('category');
+  const fetchedFoodCategoryIdParam: string | null = urlParams.get('category');
+
   const { token } = useAuth();
-  
+
+  const { fetchedFoodCategory, uniqueCategoryLoading, uniqueCategoryError } = useFoodCategory(fetchedFoodCategoryIdParam);
+
+  const foodCategoryId: string | null = fetchedFoodCategory?.id ?? null;
+
+  const { foodList, loading, error } = useFoodList();
+  const { savedFoodList, savedFoodLoading, savedFoodError } = useSavedFoodList(
+    fetchedCommitteeId ?? "",
+    foodCategoryId ?? ""
+  );
+
+  const [foodRowList, setFoodRowList] = useState<FoodRowDTO[]>([]);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [isRemoving, setIsRemoving] = useState(false);
+  const [removeError, setRemoveError] = useState<string | null>(null);
+  const [removedItem, setRemovedItem] = useState<FoodRowDTO | null>(null);
+
+  useEffect(() => {
+    if (savedFoodList) {
+      setFoodRowList(savedFoodList);
+    }
+  }, [savedFoodList]);
+
+  const status = useAsyncStatus({ loading, error });
+  const savedStatus = useAsyncStatus({ loading: savedFoodLoading, error: savedFoodError });
+
   if (token == null){
     return <div>You lost connection. You might want to relogin before doing this action.</div>
   }
   const safeToken = token;
-  const authorId: string = jwtDecode(safeToken).id;
+  const authorId: string = decodeJwt(safeToken).id;
 
   if (fetchedCommitteeId == null){
       return <div>Something went wrong when fetching the url parameter...<br/>The committee id parameter doesn't seem to be present</div>
   }
   const committeeId: string = fetchedCommitteeId;
 
-  if (fetchedFoodCategory == null){
+  if (fetchedFoodCategoryIdParam == null){
     return <div>Something went wrong when fetching the url parameter...<br/>The category parameter doesn't seem to be present</div>
   }
-  const foodCategory: string = fetchedFoodCategory;
 
-  const { foodList, loading, error } = useFoodList();
-  const { savedFoodList, savedFoodLoading, savedFoodError } = useSavedFoodList(committeeId, foodCategory);
-  const [foodRowList, setFoodRowList] = useState<FoodRowDTO[]>([]);
+  if (foodCategoryId == null){
+    return <div>Something went wrong when fetching food category information...<br/>This issue is linked to the database</div>
+  }
+
+  if (status) return status;
+  if (savedStatus) return savedStatus;
 
   const handleRemoveItem = (elementToRemove:FoodRowDTO) => {
     /*Removes the item inside the list displayed in the UI*/
     setFoodRowList(prev => prev.filter(foodRowDTO => foodRowDTO.id !== elementToRemove.id ))
   };
 
-  /*Pop-up variables*/
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-
   const handleOpen = (row:FoodRowDTO) => {setRemovedItem(row);setIsOpen(true)};
   const handleCancel = () => setIsOpen(false);
-
-  useEffect(() => {
-    // console.log("savedFoodList a changé", savedFoodList);
-    if (savedFoodList) {
-      setFoodRowList(savedFoodList);
-    }
-  }, [savedFoodList]);
 
   function addFoodRow() {
     setFoodRowList((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), foodId: "", name: "", category: foodCategory, quantity: "", co2Value: null },
+      { id: crypto.randomUUID(), foodId: "", name: "", categoryId: foodCategoryId || "", quantity: "", co2Value: null },
     ]);
   }
 
@@ -69,22 +86,12 @@ export default function Food(){
     );
   }
 
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-
-  const [isRemoving, setIsRemoving] = useState(false);
-  const [removeError, setRemoveError] = useState<string | null>(null);
-  const [removedItem, setRemovedItem] = useState<FoodRowDTO | null>(null);
-
   async function handleSave() {
-    // console.log("foodRowList: ",foodRowList);
     setIsSaving(true);
     setSaveError(null);
     try {
       const savedFoodRows = await saveFoodRows(foodRowList, committeeId, authorId, safeToken);
-      // console.log("saving successful");
       setFoodRowList(savedFoodRows.saved);
-      // console.log("set the new list successful");
       // e.g. show a success toast, reset form, etc.
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Something went wrong.");
@@ -93,16 +100,10 @@ export default function Food(){
     }
   }
 
-  const status = useAsyncStatus({ loading, error });
-  if (status) return status;
-
-  const savedStatus = useAsyncStatus({ loading: savedFoodLoading, error: savedFoodError });
-  if (savedStatus) return savedStatus;
-
   async function handleRemove() {
     try {
       if (removedItem !== null){
-        const removedFoodRows = await removeFoodRow(removedItem, committeeId, authorId, safeToken);
+        await removeFoodRow(removedItem, committeeId, authorId, safeToken);
         handleRemoveItem(removedItem);
       }
       // e.g. show a success toast, reset form, etc.
@@ -117,7 +118,7 @@ export default function Food(){
 
   return ( 
       <div>
-        <h2>{convertFoodCategoryToDisplay(foodCategory)}</h2>
+        <h2>{convertFoodCategoryToDisplay(fetchedFoodCategory?.name || "")}</h2>
         {foodRowList.map((row: FoodRowDTO) => (
           <div key={row.id}>
           
