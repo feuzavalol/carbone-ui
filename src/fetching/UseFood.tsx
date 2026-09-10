@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import type { Food, CompleteFood, FoodRowDTO, FoodRowPayload } from "../types/foodTypes";
+import type { Food, CompleteFood, FoodRowDTO, FoodRowPayload, FoodCategory } from "../types/foodTypes";
 import { API_URL } from "../constants/url";
 import { useApi } from "./useApi";
 import { useAuth } from "../auth/AuthContext";
@@ -81,7 +81,7 @@ function useFoodList() {
   return { foodList, loading, error };
 };
 
-function useSavedFoodList(committeeId: string, category: string | null){
+function useSavedFoodList(committeeId: string, categoryId: string){
   const apiFetch = useApi();
   const [savedFoodList, setSavedFoodList] = useState<FoodRowDTO[]>([]);
   const [savedFoodLoading, setSavedFoodLoading] = useState(true);
@@ -89,8 +89,11 @@ function useSavedFoodList(committeeId: string, category: string | null){
   
   const fetchFood = useCallback(async () => {
     try {
+      if (categoryId == ""){
+        return;
+      }
       setSavedFoodLoading(true);
-      const response = await apiFetch(`${API_URL}/foodItem?committeeId=${committeeId}&category=${category}`);
+      const response = await apiFetch(`${API_URL}/foodItem?committeeId=${committeeId}&categoryId=${categoryId}`);
       const foods = await response.json();
       // ("saved :",foods.success);
       setSavedFoodList(foods.success);
@@ -100,7 +103,7 @@ function useSavedFoodList(committeeId: string, category: string | null){
       setSavedFoodError(err);
       setSavedFoodLoading(false);
     }
-  }, [apiFetch, committeeId, category]);
+  }, [apiFetch, committeeId, categoryId]);
 
   useEffect(() => {
     fetchFood();
@@ -116,7 +119,7 @@ function rowToItemDTO(row: FoodRowDTO, committeeId: string, authorId: string){
       authorId: authorId,
       committeeId: committeeId,
       quantity: row.quantity as number,
-      category: row.category
+      categoryId: row.categoryId
     }
 }
 
@@ -174,4 +177,63 @@ async function removeFoodRow(row: FoodRowDTO, committeeId: string, authorId: str
   return response;
 }
 
-export { useFoodList, useSavedFoodList, saveFoodRows, useFood, removeFoodRow }
+function useFoodCategories(){
+  const apiFetch = useApi();
+  const [categoryList, setCategoryList] = useState<FoodCategory[]>([]);
+  const [categoryLoading, setLoading] = useState(true);
+  const [categoryError, setError] = useState(null);
+  
+  const fetchFoodCategory = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await apiFetch(`${API_URL}/listeFoodCategories`);
+      const foodCategories = await response.json();
+      setCategoryList(foodCategories);
+      setLoading(false);
+    } catch (err: any) {
+      console.error("Error fetching food:", err);
+      setError(err);
+      setLoading(false);
+      }
+  }, [apiFetch]);
+
+  useEffect(() => {
+    fetchFoodCategory();
+  }, [fetchFoodCategory]);
+  
+  return { categoryList, categoryLoading, categoryError };
+}
+
+function useFoodCategory(id: string | null){
+  const apiFetch = useApi();
+  const [fetchedFoodCategory, setCategory] = useState<FoodCategory | null>(null);
+  const [uniqueCategoryLoading, setLoading] = useState(true);
+  const [uniqueCategoryError, setError] = useState(null);
+  
+  const fetchFoodCategory = useCallback(async () => {
+    try {
+      if (id == null) {
+        setLoading(false);
+        setError(null);
+        return;
+      }
+      setLoading(true);
+      const response = await apiFetch(`${API_URL}/foodCategory?id=${id}`);
+      const category = await response.json();
+      setCategory(category);
+      setLoading(false);
+    } catch (err: any) {
+      console.error("Error fetching food:", err);
+      setError(err);
+      setLoading(false);
+      }
+  }, [apiFetch]);
+
+  useEffect(() => {
+    fetchFoodCategory();
+  }, [fetchFoodCategory]);
+  
+  return { fetchedFoodCategory, uniqueCategoryLoading, uniqueCategoryError };
+}
+
+export { useFoodList, useSavedFoodList, saveFoodRows, useFood, removeFoodRow, useFoodCategories, useFoodCategory }

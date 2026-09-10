@@ -20,29 +20,30 @@ function getUrl(category: string, objectId: string, value: number){
   return url;
 }
 
-async function fetchCarbonValue(category: string, objectId: string, value: number): Promise<number> {
+async function fetchCarbonValue(category: string, objectId: string, value: number, token: string): Promise<number> {
   const url = getUrl(category, objectId, value);
   const response = await fetch(url,
     {
       method: "GET",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
       },
     });
   const data = await response.json();
   return data.carbon_value;
 }
 
-async function fetchFoodCarbonValue(foodId: string, quantity: number): Promise<number> {
-  return fetchCarbonValue("food",foodId,quantity);
+async function fetchFoodCarbonValue(foodId: string, quantity: number, token: string): Promise<number> {
+  return fetchCarbonValue("food",foodId,quantity,token);
 }
 
-async function fetchTransportCarbonValue(transportId: string, distance: number): Promise<number> {
-  return fetchCarbonValue("transport",transportId,distance);
+async function fetchTransportCarbonValue(transportId: string, distance: number, token: string): Promise<number> {
+  return fetchCarbonValue("transport",transportId,distance,token);
 }
 
-async function fetchGoodCarbonValue(goodId: string, quantity: number): Promise<number> {
-  return fetchCarbonValue("good",goodId,quantity);
+async function fetchGoodCarbonValue(goodId: string, quantity: number, token: string): Promise<number> {
+  return fetchCarbonValue("good",goodId,quantity,token);
 }
 
 export { fetchFoodCarbonValue, fetchTransportCarbonValue, fetchGoodCarbonValue }

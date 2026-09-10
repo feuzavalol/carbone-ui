@@ -35,7 +35,7 @@ function useCommittee(id: string) {
   return { committee, loading, error };
 }
 
-function useCommittees(year: number) {
+function useCommittees(year: string | number | null) {
     const apiFetch = useApi();
     const [committees, setCommittees] = useState<Committee[]>([]);
     const [loading, setLoading] = useState(true);
@@ -44,6 +44,9 @@ function useCommittees(year: number) {
 
     const fetchCommitteeList = useCallback(async () => {
     try {
+      if (year == null){
+        return;
+      }
       setLoading(true);
       const response = await apiFetch(`${API_URL}/committees?year=${year}`);
       const data = await response.json();
@@ -64,4 +67,33 @@ function useCommittees(year: number) {
   return { committees, loading, error };
 };
 
-export { useCommittee, useCommittees }
+function useYear(){
+  const apiFetch = useApi();
+    const [years, setYears] = useState<string[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
+    
+
+    const fetchYears = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await apiFetch(`${API_URL}/years`);
+      const data = await response.json();
+      setYears(data.success);
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching years:", err);
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  }, [apiFetch]);
+
+  useEffect(() => {
+    fetchYears();
+  }, [fetchYears]);
+    
+  return { years, loading, error };
+}
+
+export { useCommittee, useCommittees, useYear }
