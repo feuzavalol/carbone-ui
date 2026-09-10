@@ -100,7 +100,7 @@ export default function Home(){
         <div>
             <div>{authenticatedValidationText}</div>
             <WelcomeText user={user}/>
-            {token && (
+            {/* {token && (
               <div style={styles.result}>
                 <p style={styles.resultLabel}>Token received:</p>
                 <textarea style={styles.tokenBox} readOnly value={token} rows={5} />
@@ -112,7 +112,7 @@ export default function Home(){
                   Copy token
                 </button>
               </div>
-            )}
+            )} */}
         </div>
     )
 }
