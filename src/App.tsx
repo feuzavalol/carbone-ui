@@ -8,6 +8,7 @@ import Food from './pages/Food'
 import Goods from "./pages/Goods"
 import Transport from './pages/Transport'
 import Liste from './pages/Liste'
+import OverviewByYear from "./pages/OverviewYear"
 import Overview from './pages/OverviewListe'
 import { OverviewFood, OverviewTransport, OverviewGoods } from './pages/OverviewCategory'
 import OverviewFoodCategory from "./pages/OverviewFoodCategory"
@@ -34,6 +35,7 @@ function App() {
             <Route path="/liste/goods" element={<OverviewGoods />} />
             <Route path="/liste/goods/data" element={<Goods />} />
             {/* <Route path="/liste/goods/summary" element={<SummaryGoods />} /> */}
+            <Route path="/listeByYear" element={<OverviewByYear />} />
             <Route path="/listes" element={<Overview />} />
             <Route path="/liste" element={<Liste />} />
 

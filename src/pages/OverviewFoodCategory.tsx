@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useCommittee } from "../fetching/UseCommittee";
-import { FoodCategories, convertFoodCategoryToDisplay } from "../constants/categories";
+import { convertFoodCategoryToDisplay } from "../constants/categories";
+import { useFoodCategories } from "../fetching/UseFood";
+import type { FoodCategory } from "../types/foodTypes";
 
 export default function OverviewFoodCategory() {
     let navigate = useNavigate();
@@ -15,7 +17,8 @@ export default function OverviewFoodCategory() {
     if (id == null){
         return <div>Something went wrong when fetching the url parameter...</div>
     }
-    const {committee,loading,error} = useCommittee(id);
+    const {committee, loading, error} = useCommittee(id);
+    const { categoryList, categoryLoading, categoryError } = useFoodCategories();
     var title: string = `${committee.category} n°${committee.number} ${committee.year}`
     var subtitle: string = "Section Alimentation";
 
@@ -23,9 +26,9 @@ export default function OverviewFoodCategory() {
         <div>
             <h1>{title}</h1>
             <h2>{subtitle}</h2>
-            {FoodCategories.map((subcategory: string) => (
+            {categoryList.map((subcategory: FoodCategory) => (
                 <div>
-                    <button onClick={()=>onRouteChange(subcategory)}>{convertFoodCategoryToDisplay(subcategory)}</button>
+                    <button onClick={()=>onRouteChange(subcategory.id)}>{convertFoodCategoryToDisplay(subcategory.name)}</button>
                     <br/>
                 </div>
             ))}
