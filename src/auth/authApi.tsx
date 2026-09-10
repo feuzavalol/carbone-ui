@@ -1,4 +1,5 @@
 import type { CommitteeCategory, Role } from "../constants/roles";
+import { API_URL } from "../constants/url";
 
 interface LoginResponse {
   token: string;
@@ -26,7 +27,7 @@ interface RegisterRequest {
 }
 
 async function loginRequest(email: string, password: string): Promise<string> {
-  const res = await fetch("http://localhost:8080/auth/login", {
+  const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -42,13 +43,14 @@ async function loginRequest(email: string, password: string): Promise<string> {
 }
 
 async function baseRegisterRequest(username: string, email: string, password: string){
+  console.log("We're trying to register");
   const request: BaseRegisterRequest = {username, email, password}
-  const res = await fetch("http://localhost:8080/auth/register", {
+  const res = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request),
   });
-
+  console.log(res);
   if (!res.ok) {
         const data: ApiError = await res.json().catch(() => ({}));
         throw new Error(data.message ?? data.error ?? `Request failed (${res.status})`);
@@ -64,7 +66,7 @@ async function adminRegisterRequest(username: string, email: string, password: s
   }
   const request: RegisterRequest = {username, email, password, role, committeeCategory, year, committeeNumber}
   console.log(JSON.stringify(request));
-  const res = await fetch("http://localhost:8080/auth/registerAdmin", {
+  const res = await fetch(`${API_URL}/auth/registerAdmin`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request),
