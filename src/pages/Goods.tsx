@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
 import { useAsyncStatus } from "../fetching/ErrorHandling";
-import { useAuth } from "../auth/AuthContext";
+import { decodeJwt, useAuth } from "../auth/AuthContext";
 import GoodRow from "../components/GoodRow";
 import { useGoodList, useSavedGoodList, saveGoodRows, removeGoodRow } from "../fetching/UseGood";
 import type { GoodRowDTO } from "../types/goodsTypes"
 import TrashIcon from "../assets/trash.png"
-import { jwtDecode } from "jwt-decode";
-
-
 
 export default function Goods(){ 
   const queryString = window.location.search;
@@ -20,7 +17,7 @@ export default function Goods(){
     return <div>You lost connection. You might want to relogin before doing this action.</div>
   }
   const safeToken = token;
-  const authorId: string = jwtDecode(safeToken).id;
+  const authorId: string = decodeJwt(safeToken).id;
 
   if (fetchedCommitteeId == null){
       return <div>Something went wrong when fetching the url parameter...<br/>The committee id parameter doesn't seem to be present</div>
@@ -43,7 +40,6 @@ export default function Goods(){
   const handleCancel = () => setIsOpen(false);
 
   useEffect(() => {
-    console.log("savedGoodList a changé", savedGoodList);
     if (savedGoodList) {
       setGoodRowList(savedGoodList);
     }
@@ -52,7 +48,7 @@ export default function Goods(){
   function addGoodRow() {
     setGoodRowList((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), goodId: "", name: "", category: "", quantity: "", co2Value: null },
+      { id: crypto.randomUUID(), goodId: "", name: "", category: "", quantity: "", co2Value: null, expectedUnit: null },
     ]);
   }
 
@@ -70,14 +66,11 @@ export default function Goods(){
   const [removedItem, setRemovedItem] = useState<GoodRowDTO | null>(null);
 
   async function handleSave() {
-    console.log("goodRowList: ",goodRowList);
     setIsSaving(true);
     setSaveError(null);
     try {
       const savedGoodRows = await saveGoodRows(goodRowList, committeeId, authorId, safeToken);
-      console.log("saving successful");
       setGoodRowList(savedGoodRows.saved);
-      console.log("set the new list successful");
       // e.g. show a success toast, reset form, etc.
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Something went wrong.");
