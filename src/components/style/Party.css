@@ -19,14 +19,6 @@
     "bus car"
 }
 
-.whole-departure-grid-container{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1em;
-    grid-template-areas: 
-    "departure arrival"
-}
-
 .departure-grid-container{
     align-items: center;
     display: grid;
@@ -43,7 +35,8 @@
     gap: 1em;
     grid-template-areas: 
     "departure"
-    "transportation";
+    "transportation"
+    "save-button";
 }
 
 .transport-input {
