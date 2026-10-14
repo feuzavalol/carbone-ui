@@ -1,8 +1,11 @@
 import type { CommitteeCategory, Role } from "../constants/roles";
 import { API_URL } from "../constants/url";
+import type { FilledUser } from "../types/authTypes";
 
 interface LoginResponse {
-  token: string;
+  success: boolean,
+  token: string,
+  message: string
 }
 
 interface ApiError {
@@ -57,18 +60,34 @@ async function baseRegisterRequest(username: string, email: string, password: st
       }
 
   const data: LoginResponse = await res.json();
+
   return data.token;
 }
 
-async function adminRegisterRequest(username: string, email: string, password: string, role: Role, committeeCategory: CommitteeCategory, year: number, committeeNumber: number | undefined): Promise<string> {
-  if (committeeNumber == undefined){
-    committeeNumber = 0;
+async function adminRegisterRequest(user: FilledUser, token: string): Promise<LoginResponse> {
+  if (user.committee == null || user.committee == undefined){
+    user.committee = "BRE";
   }
-  const request: RegisterRequest = {username, email, password, role, committeeCategory, year, committeeNumber}
+  if (user.number == undefined || user.role != "LIS"){
+    user.number = 0;
+  }
+
+  const request: RegisterRequest = {
+    username: user.name, 
+    email: user.email, 
+    password: user.password, 
+    role: user.role, 
+    committeeCategory: user.committee, 
+    year: user.year, 
+    committeeNumber: user.number
+  }
   console.log(JSON.stringify(request));
   const res = await fetch(`${API_URL}/auth/registerAdmin`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
     body: JSON.stringify(request),
   });
 
@@ -78,7 +97,7 @@ async function adminRegisterRequest(username: string, email: string, password: s
       }
 
   const data: LoginResponse = await res.json();
-  return data.token;
+  return data;
 }
 
-export { loginRequest, baseRegisterRequest, adminRegisterRequest}
+export { type LoginResponse, loginRequest, baseRegisterRequest, adminRegisterRequest }

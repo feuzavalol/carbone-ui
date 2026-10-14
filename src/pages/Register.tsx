@@ -1,79 +1,120 @@
 // This page is used to register users when you're an admin user
 
 import { useState } from "react";
-import Select from "react-select";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { adminRegisterRequest } from "../auth/authApi";
-import { type Role, type CommitteeCategory, NumberNeedingCategories, Roles, CommitteeCategories } from "../constants/roles";
-import type { SingleValue } from "react-select";
+import type { LoginResponse } from "../auth/authApi";
+import { type Role, type CommitteeCategory, NumberNeedingCategories } from "../constants/roles";
+import { useCommitteeCategories, useRoles } from "../fetching/UseCommittee";
+import { MissingToken, useAsyncStatus } from "../fetching/ErrorHandling";
+import { emptyUser, type FilledUser, type User } from "../types/authTypes";
 
-type Object = Role | CommitteeCategory
 
-type CustomOption = {
-  value: Object,
-  label: string
-}
-
-function customOptionOf(f: Object){
-  const opt : CustomOption = {
-    value: f,
-    label: f
-  }
-  return opt
-}
-
-function toCustomOption(l:Object[]){
-  return l.map((f:Object) => customOptionOf(f));
-}
 
 export function RegisterPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [committee, setCommittee] = useState<CustomOption | null>(null); 
-  const [role, setRole] = useState<CustomOption | null>(null);
-  const [number, setNumber] = useState<number>();
-  const year = 2025; // TODO: change to be dynamically picked
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // const [name, setName] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [password, setPassword] = useState("");
+  // const [committee, setCommittee] = useState<CommitteeCategory | null>(null); 
+  // const [role, setRole] = useState<Role | null>(null);
+  // const [number, setNumber] = useState<number | null>(null);
+  // const year = 2026; 
 
-  const roleOptions = toCustomOption(Roles);
-  const committeeOptions = toCustomOption(CommitteeCategories)
+  const [user, setUser] = useState<User>(emptyUser);
+  const [loadingRegister, setLoading] = useState(false);
+  const [errorRegister, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const { token } = useAuth();
+  const { categories, loadingCategories, errorCategories } = useCommitteeCategories(user.year);
+  const { roles, loadingRoles, errorRoles } = useRoles(user.year);
+  const status = useAsyncStatus({ loading: loadingCategories, error: errorCategories});
+  const statusRoles = useAsyncStatus({ loading: loadingRoles, error: errorRoles });
+
+  const tokenMissing = MissingToken({token});
+
+  if (tokenMissing) {return tokenMissing;}
+
+  if (status) { return status; }
+  if (statusRoles) { return status; }
+
+  const handleChange = (e: any) => {
+    setUser((prev: User) => ({
+      ...prev, 
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSpecificChange = ({ fieldName, fieldValue }: { fieldName: string, fieldValue: string | number | null}) => {
+    setUser((prev: User) => ({
+      ...prev, 
+      [fieldName]: fieldValue,
+    }));
+  }
+
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
-        if (role == undefined){
-            throw new Error("Le champ 'role' manque.");
+      if (user.email == undefined){
+        throw new Error("Il manque le champ 'email'.");
+      }
+      if (user.password == undefined){
+        throw new Error("Il manque le champ 'password'.");
+      }
+      if (user.role == undefined){
+          throw new Error("Il manque le champ 'role'.");
+      }
+      if (user.committee == undefined || user.committee == null){
+        if (user.role == "ADM" || user.role == "BRE"){
+          // handleSpecificChange({ fieldName: "committee", fieldValue: "BRE" });
+          user.committee = "BRE";
         }
-        if (committee == undefined){
-            throw new Error("Le champ 'association' manque");
+        else {
+          throw new Error("Le champ 'association' manque");
         }
-        if (NumberNeedingCategories.includes(committee.value) && number == undefined){
-            throw new Error("Le champ 'numéro' manque");
-        }
-        await adminRegisterRequest(name, email, password, role.value, committee.value, year, number);
-    } catch (err) {
-        setError("L'email ou le mot de passe sont incorrects");
+      }
+      if (NumberNeedingCategories.includes(user.committee) && user.number == undefined){
+          throw new Error("Le champ 'numéro' manque");
+      }
+      const filledUser: FilledUser = user;
+      const registerAnswer: LoginResponse = await adminRegisterRequest(filledUser, token);
+      if (!registerAnswer.success){
+        setError(registerAnswer.message);
+      }
+    } catch (err: any) {
+        console.log(err);
+        setError("Something went wrong: "+err.message);
     } finally {
         setLoading(false);
     }
   };
 
-  function handleRoleSelect(newRole: SingleValue<CustomOption>){
-    setRole(newRole?.label != undefined ? customOptionOf(newRole?.value) : null);
+  function handleRoleSelect(e: React.ChangeEvent<HTMLSelectElement>){
+    const newRole = e.target.value as Role;
+    handleSpecificChange({fieldName: "role", fieldValue: newRole});
   }
 
-  function handleCommitteeSelect(newCommittee: SingleValue<CustomOption>){
-    setCommittee(newCommittee?.label != undefined ? customOptionOf(newCommittee?.value) : null);
+  function handleCommitteeSelect(e: React.ChangeEvent<HTMLSelectElement>) {
+    const newCategory = e.target.value as CommitteeCategory;
+    if (NumberNeedingCategories.includes(newCategory)){
+      handleSpecificChange({fieldName: "number", fieldValue: null});
+    }
+    handleSpecificChange({fieldName: "committee", fieldValue: newCategory});
   }
 
-  const isListeux: boolean = role?.value == "LIS";
-  const needNumber: boolean = committee ? NumberNeedingCategories.includes(committee.value) : false
+  const isListeux: boolean = user.role == "LIS";
+  const needNumber: boolean = user.committee ? NumberNeedingCategories.includes(user.committee) : false;
 
+  if (needNumber && user.number == null){
+    handleSpecificChange({fieldName: "number", fieldValue: 1})
+  }
+  if (!needNumber && user.number != null){
+    handleSpecificChange({fieldName: "number", fieldValue: null})
+  }
+
+
+  console.log(user);
   return (
     <div style={styles.page}>
       <div style={styles.card}>
@@ -86,9 +127,10 @@ export function RegisterPage() {
                 Name
                 <input
                 style={styles.input}
+                name="name"
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={user.name}
+                onChange={handleChange}
                 required
                 />
             </label>
@@ -97,9 +139,10 @@ export function RegisterPage() {
             Email
             <input
               style={styles.input}
+              name="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={user.email}
+              onChange={handleChange}
               required
               autoComplete="username"
             />
@@ -109,9 +152,10 @@ export function RegisterPage() {
             Password
             <input
               style={styles.input}
+              name="password"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={user.password}
+              onChange={handleChange}
               required
               minLength={8}
             />
@@ -119,21 +163,43 @@ export function RegisterPage() {
 
           <label style={styles.label}>
             Rôle
-            <Select
+            <select
+              name="select-role"
+              id={user.role ?? ""}
+              value={user.role ?? ""}
+              onChange={handleRoleSelect}
+            >
+              <option value="" disabled>Choisissez le rôle</option>
+                {roles.map((option) => (
+                  <option key={option} value={option}>{option}</option>
+                ))}
+            </select>
+            {/* <Select
                 options={roleOptions}
                 value={role}
                 onChange={(newRole) => handleRoleSelect(newRole)}
                 required
-            />
+            /> */}
           </label>
           {isListeux && <label style={styles.label}>
             Association
-            <Select
+            <select
+              name="select-committee"
+              id={user.committee || ""}
+              value={user.committee ?? ""}
+              onChange={handleCommitteeSelect}
+            >
+              <option value="" disabled>choisissez l'asso</option>
+              {categories.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
+            </select>
+            {/* <Select
                 options={committeeOptions}
                 value={committee}
                 onChange={(newCommittee) => handleCommitteeSelect(newCommittee)}
                 required
-            />
+            /> */}
           </label>
           }
           { needNumber && 
@@ -141,24 +207,25 @@ export function RegisterPage() {
                 Numéro
                 <input
                 style={styles.input}
+                name="number"
                 type="number"
-                value={number}
-                min={0}
-                max={4}
+                value={user.number}
+                min={1}
+                max={3}
                 step={1}
-                onChange={(e) => {console.log(parseInt(e.target.value)); setNumber(parseInt(e.target.value))}}
+                onChange={handleChange}
                 required
                 />
             </label>
 
           }
 
-          <button type="submit" disabled={loading} style={styles.submit}>
-            {loading ? "Please wait…" : "Create account"}
+          <button type="submit" disabled={loadingRegister} style={styles.submit}>
+            {loadingRegister ? "Please wait…" : "Create account"}
           </button>
         </form>
 
-        {error && <p style={styles.error}>{error}</p>}
+        {errorRegister && <p style={styles.error}>{errorRegister}</p>}
       </div>
     </div>
   );
