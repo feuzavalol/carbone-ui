@@ -1,5 +1,3 @@
-const SpendingCategories = ["food","transport","goods"];
-
 function convertCategoryToDisplay(label: string){
     /*Useful to go from "food" to "Alimentation" etc.*/
     switch (label) {
@@ -41,8 +39,9 @@ function convertFoodCategoryToDisplay(category: string){
     }
 }
 
-const GoodCategories = ["Goodies","Vêtements","Décorations","Tabac"];
+function toDisplay(list: string[]){
+    return list.map((label:string) => convertFoodCategoryToDisplay(label));
+}
 
-export { convertCategoryToDisplay }
-export { convertFoodCategoryToDisplay }
-export { GoodCategories }
+export { convertCategoryToDisplay, convertFoodCategoryToDisplay }
+export { toDisplay }
