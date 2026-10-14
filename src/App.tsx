@@ -8,12 +8,14 @@ import Food from './pages/Food'
 import Goods from "./pages/Goods"
 import Transport from './pages/Transport'
 import Liste from './pages/Liste'
-import OverviewByYear from "./pages/OverviewYear"
-import Overview from './pages/OverviewListe'
-import { OverviewFood, OverviewTransport, OverviewGoods } from './pages/OverviewCategory'
-import OverviewFoodCategory from "./pages/OverviewFoodCategory"
+import OverviewByYear from "./pages/overview/OverviewYear"
+import Overview from './pages/overview/OverviewListe'
+import { OverviewFood, OverviewTransport, OverviewGoods } from './pages/overview/OverviewCategory'
+import OverviewFoodCategory from "./pages/overview/OverviewFoodCategory"
 import { LoginPage } from "./pages/Login"
 import { RegisterPage } from "./pages/Register"
+import FoodSummary from "./pages/summary/FoodSummary"
+import GoodSummary from "./pages/summary/GoodSummary"
 
 function App() {
   return (
@@ -29,12 +31,12 @@ function App() {
             <Route path="/liste/food" element={<OverviewFood />} />
             <Route path="/liste/food/data" element={<OverviewFoodCategory />} />
             <Route path="/liste/food/data/moment" element={<Food />} />
-            {/* <Route path="/liste/food/summary" element={<SummaryFood />} /> */}
+            <Route path="/liste/food/summary" element={<FoodSummary />} />
             <Route path="/liste/transport" element={<OverviewTransport />} />
             <Route path="/liste/transport/data" element={<Transport />} />
             <Route path="/liste/goods" element={<OverviewGoods />} />
             <Route path="/liste/goods/data" element={<Goods />} />
-            {/* <Route path="/liste/goods/summary" element={<SummaryGoods />} /> */}
+            <Route path="/liste/goods/summary" element={<GoodSummary />} />
             <Route path="/listeByYear" element={<OverviewByYear />} />
             <Route path="/listes" element={<Overview />} />
             <Route path="/liste" element={<Liste />} />
