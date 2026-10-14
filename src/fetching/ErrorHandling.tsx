@@ -10,7 +10,7 @@ function AsyncBoundary({ loading, error, data, children, loadingFallback, errorF
   return children(data);
 }
 
-function useAsyncStatus({ loading, error }) {
+function useAsyncStatus({ loading, error }: {loading: boolean, error: Error | null}) {
   if (loading) return <Spinner />;
   if (error) return <ErrorMessage error={error} />;
   return null; // means "everything is fine, render your content"
@@ -20,7 +20,7 @@ function Spinner() {
   return <div className="spinner">Loading...</div>;
 }
 
-function ErrorMessage({ error }) {
+function ErrorMessage({ error }: {error: Error}) {
   return (
     <div className="error-box">
       <p>Something went wrong.</p>
@@ -29,4 +29,11 @@ function ErrorMessage({ error }) {
   );
 }
 
-export { AsyncBoundary, useAsyncStatus }
+function MissingToken({token}:{token: string | null}){
+  if (token == null){
+      return <div>Vous devez être connecté en tant qu'administrateur.ice ou listeux.se pour modifier les bilans carbone des listes et des assos.<br/>Veuillez vous reconnecter.</div>
+  }
+  return null;
+}
+
+export { AsyncBoundary, useAsyncStatus, MissingToken }
