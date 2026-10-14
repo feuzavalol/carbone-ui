@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { useCommittee } from "../fetching/UseCommittee";
-import { convertCategoryToDisplay } from "../constants/categories";
+import { useCommittee } from "../../fetching/UseCommittee";
+import { convertCategoryToDisplay } from "../../constants/categories";
 
 
 

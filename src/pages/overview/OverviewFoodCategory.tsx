@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { useCommittee } from "../fetching/UseCommittee";
-import { convertFoodCategoryToDisplay } from "../constants/categories";
-import { useFoodCategories } from "../fetching/UseFood";
-import type { FoodCategory } from "../types/foodTypes";
+import { useCommittee } from "../../fetching/UseCommittee";
+import { convertFoodCategoryToDisplay } from "../../constants/categories";
+import { useFoodCategories } from "../../fetching/UseFood";
+import type { FoodCategory } from "../../types/foodTypes";
 
 export default function OverviewFoodCategory() {
     let navigate = useNavigate();
