@@ -1,3 +1,12 @@
+:root {
+  --dust-grey: #dad7cdff;
+  --dry-sage: #a3b18aff;
+  --fern: #588157ff;
+  --hunter-green: #3a5a40ff;
+  --pine-teal: #344e41ff;
+  --evergreen: #132a13ff;
+}
+
 /* Dashboard et Layout */
 .dashboard {
   min-height: 100vh;
@@ -7,7 +16,7 @@
 
 /* Navbar moderne */
 .navbar {
-  background: linear-gradient(135deg, #1e1e2e 0%, #2a2a40 100%);
+  background: linear-gradient(135deg, var(--hunter-green) 0%, var(--pine-teal) 100%);
   padding: 1rem 2rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   position: sticky;
@@ -16,7 +25,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+  border-bottom: 2px solid var(--fern);
 }
 
 .navbar h1 {
@@ -25,7 +34,7 @@
   font-weight: bold;
   margin: 0;
   letter-spacing: 1px;
-  background: linear-gradient(90deg, #00d4ff 0%, #7b2cbf 100%);
+  background: var(--dry-sage);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -56,8 +65,8 @@
 }
 
 .navbar a:hover {
-  color: #00d4ff;
-  background: rgba(0, 212, 255, 0.1);
+  color: var(--dry-sage);
+  background: var(--hunter-green);
 }
 
 /* Effet de soulignement animé */
@@ -69,7 +78,7 @@
   transform: translateX(-50%);
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, #00d4ff 0%, #7b2cbf 100%);
+  background: var(--fern);
   transition: width 0.3s ease;
 }
 
@@ -79,15 +88,15 @@
 
 /* Lien actif */
 .navbar a.active {
-  color: #00d4ff;
-  background: rgba(0, 212, 255, 0.15);
+  color: var(--dry-sage);
+  background: var(--hunter-green);
 }
 
 /* Contenu principal */
 .content {
   flex: 1;
   padding: 2rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: var(--evergreen);
 }
 
 /* Responsive - Menu burger pour mobile */

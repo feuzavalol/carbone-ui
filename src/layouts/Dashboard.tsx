@@ -9,7 +9,6 @@ function Dashboard() {
 
   useEffect(() => {
       if (token == null){
-        
         navigate("/login")
       }
     }, [token]);
@@ -23,8 +22,8 @@ function Dashboard() {
           <ul>
             <li><NavLink to="/home">Accueil</NavLink></li>
             <li><NavLink to="/login">Se connecter</NavLink></li>
-            {/* <li><NavLink to="/users">Utilisateurs</NavLink></li> */}
-            <li><NavLink to="/listeByYear">Listes</NavLink></li>
+            <li><NavLink to="/register">Créer</NavLink></li>
+            <li><NavLink to="/listeByYear">Listes/Assos</NavLink></li>
           </ul>
         </nav>
         
@@ -34,8 +33,8 @@ function Dashboard() {
       </div>
       <footer>
         <p>
-          Cet outil n'a pas de vocation à être utilisé dans un contexte professionel ou sérieux. <br />
-          Il est a utilisé avec du recul et un minimum de connaissance sur le sujet.
+          Cet outil n'a pas de vocation à être utilisé dans un contexte professionnel ou sérieux. <br />
+          Il est à utilisé avec du recul et un minimum de connaissance sur le sujet.
         </p>
       </footer>
     </>
