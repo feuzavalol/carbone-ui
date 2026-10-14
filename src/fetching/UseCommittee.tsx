@@ -96,4 +96,62 @@ function useYear(){
   return { years, loading, error };
 }
 
-export { useCommittee, useCommittees, useYear }
+function useRoles(year: string | number | null){
+  const apiFetch = useApi();
+  const [roles, setRoles] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  
+
+  const fetchYears = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await apiFetch(`${API_URL}/roles?year=${year}`);
+      const data = await response.json();
+      setRoles(data.success);
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching roles:", err);
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  }, [apiFetch]);
+
+  useEffect(() => {
+    fetchYears();
+  }, [fetchYears]);
+    
+  return { roles, loadingRoles: loading, errorRoles: error };
+}
+
+function useCommitteeCategories(year: string | number | null){
+  const apiFetch = useApi();
+  const [categories, setCategories] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  
+
+  const fetchCategories = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await apiFetch(`${API_URL}/categories?year=${year}`);
+      const data = await response.json();
+      setCategories(data.success);
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching roles:", err);
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  }, [apiFetch]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+    
+  return { categories, loadingCategories: loading, errorCategories: error };
+}
+
+export { useCommittee, useCommittees, useYear, useRoles, useCommitteeCategories }
