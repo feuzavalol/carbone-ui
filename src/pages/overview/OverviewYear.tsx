@@ -5,9 +5,16 @@ import { useAuth } from "../../auth/AuthContext";
 
 export default function OverviewByYear(){
     let navigate = useNavigate();
-    const onRouteChange = (year: string) => {
-        let path: string = `/listes?year=${year}`;
-        navigate(path);
+
+    const goTo = ({path, arg}:{path: string, arg: string | undefined}) => {
+        let finalPath: string;
+        if (arg != undefined){
+            finalPath = `${path}${arg}`;
+        }
+        else{
+            finalPath = `${path}`;
+        }
+        navigate(finalPath);
     }
 
     const { token } = useAuth();
@@ -23,9 +30,13 @@ export default function OverviewByYear(){
 
     return (
         <div>
+            <button onClick={() => goTo({path: "/register"})}>
+                Créer un nouvel utilisateur
+            </button>
+            <br />
             {years.map((year: string) => (
                 <div key={year}>
-                    <button onClick={() => onRouteChange(year as string)}>
+                    <button onClick={() => goTo({path: "/listes?year=", arg: year as string})}>
                         {`${year}`}
                     </button>
                 </div>

@@ -1,17 +1,31 @@
 import { useEffect, useState, useCallback } from "react";
-import type { Good, CompleteGood, GoodRowDTO, GoodRowPayload } from "../types/goodsTypes";
+import type { CompleteGood, GoodRowDTO, GoodRowPayload } from "../types/goodsTypes";
 import { API_URL } from "../constants/url";
 import { useApi } from "./useApi";
 import { useAuth } from "../auth/AuthContext";
 
+const EmptyGood: () => CompleteGood = () => {
+    return {
+        id: "",
+        name: "",
+        costPerUnit: 0,
+        category: "",
+        details: "",
+        source: "",
+        comments: "",
+        unit: "",
+        expectedUnit: ""
+    }
+}
+
 function useGood(goodId: string | null){
   const { token } = useAuth();
-  const [good, setGood] = useState<Good | null>(null);
+  const [good, setGood] = useState<CompleteGood>(EmptyGood());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   useEffect(() => {
     if (!goodId) {
-      setGood(null);
+      setGood(EmptyGood());
       setLoading(false);
       setError(null);
       return;
@@ -30,7 +44,7 @@ function useGood(goodId: string | null){
         });
 
         if(!response.ok) throw new Error(`Failed to fetch good with id=${goodId}`);
-        const good: Good = await response.json();
+        const good: CompleteGood = await response.json();
         if (!cancelled) setGood(good);
       } catch (err: any) {
         if (!cancelled) setError(err);
@@ -50,7 +64,7 @@ function useGood(goodId: string | null){
 
 function useGoodList() {
   const apiFetch = useApi();
-  const [goodList, setGoodList] = useState<Good[]>([]);
+  const [goodList, setGoodList] = useState<CompleteGood[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -59,12 +73,12 @@ function useGoodList() {
       setLoading(true);
       const response = await apiFetch(`${API_URL}/good`);
       const goods = await response.json();
-      const simplifiedGood: Good[] = goods.map((item: CompleteGood) => ({
-        id: item.id,
-        name: item.name,
-        category: item.category
-      }));
-      setGoodList(simplifiedGood);
+      // const simplifiedGood: Good[] = goods.map((item: CompleteGood) => ({
+      //   id: item.id,
+      //   name: item.name,
+      //   category: item.category
+      // }));
+      setGoodList(goods);
       setLoading(false);
     } catch (err: any) {
       console.error("Error fetching good:", err);
@@ -79,6 +93,85 @@ function useGoodList() {
   
   return { goodList, loading, error };
 };
+
+function useGoodCategories(){
+  const apiFetch = useApi();
+  const [goodCategories, setGoodCategories] = useState<string[]>([]);
+  const [goodCategoriesLoading, setLoading] = useState(true);
+  const [goodCategoriesError, setError] = useState(null);
+  
+  const fetchGood = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await apiFetch(`${API_URL}/goodCategories`);
+      const categories = await response.json();
+        setGoodCategories(categories.success);
+        setLoading(false);
+      } catch (err: any) {
+        console.error("Error fetching good categories:", err);
+        setError(err);
+        setLoading(false);
+      }
+  }, [apiFetch]);
+
+  useEffect(() => {
+    fetchGood();
+  }, [fetchGood]);
+  
+  return { goodCategories, goodCategoriesLoading, goodCategoriesError };
+}
+
+function useUnits(){
+  const apiFetch = useApi();
+  const [units, setUnits] = useState<string[]>([]);
+  const [unitsLoading, setLoading] = useState(true);
+  const [unitsError, setError] = useState(null);
+  
+  const fetchUnits = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await apiFetch(`${API_URL}/expectedUnits`);
+      const units = await response.json();
+        setUnits(units.success);
+        setLoading(false);
+      } catch (err: any) {
+        console.error("Error fetching good units:", err);
+        setError(err);
+        setLoading(false);
+      }
+  }, [apiFetch]);
+
+  useEffect(() => {
+    fetchUnits();
+  }, [fetchUnits]);
+  
+  return { units, unitsLoading, unitsError };
+}
+
+async function postRequest(route: string, token: string, good: CompleteGood){
+  const response = await fetch(`${API_URL}${route}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ good: good }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null);
+    throw new Error(errorBody?.message ?? `Request failed with status ${response.status}`);
+  }
+  return response.json();
+}
+
+async function modifyGood(good: CompleteGood, token: string){
+  return postRequest("/modifyGood", token, good);
+}
+
+async function createGood(good: CompleteGood, token: string){
+  return postRequest("/createGood", token, good);
+}
 
 function useSavedGoodList(committeeId: string){
   const apiFetch = useApi();
@@ -172,3 +265,5 @@ async function removeGoodRow(row: GoodRowDTO, committeeId: string, authorId: str
 }
 
 export { useGoodList, useSavedGoodList, saveGoodRows, useGood, removeGoodRow }
+export { useGoodCategories, useUnits }
+export { modifyGood, createGood }

@@ -4,15 +4,28 @@ import { API_URL } from "../constants/url";
 import { useApi } from "./useApi";
 import { useAuth } from "../auth/AuthContext";
 
+const EmptyFood: () => CompleteFood = () => {
+    return {
+        id: "",
+        name: "",
+        costPerUnit: 0,
+        foodGroup: "",
+        subFoodGroup: "",
+        source: "",
+        details: "",
+        unit: ""
+    }
+}
+
 function useFood(foodId: string | null){
   const { token } = useAuth();
-  const [food, setFood] = useState<Food | null>(null);
+  const [food, setFood] = useState<CompleteFood | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   useEffect(() => {
     // Guard INSIDE the effect, not around the hook call
     if (!foodId) {
-      setFood(null);
+      setFood(EmptyFood());
       setLoading(false);
       setError(null);
       return;
@@ -31,7 +44,7 @@ function useFood(foodId: string | null){
         });
 
         if(!response.ok) throw new Error(`Failed to fetch food with id=${foodId}`);
-        const food: Food = await response.json();
+        const food: CompleteFood = await response.json();
         if (!cancelled) setFood(food);
       } catch (err: any) {
         if (!cancelled) setError(err);
@@ -51,7 +64,7 @@ function useFood(foodId: string | null){
 
 function useFoodList() {
   const apiFetch = useApi();
-  const [foodList, setFoodList] = useState<Food[]>([]);
+  const [foodList, setFoodList] = useState<CompleteFood[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -60,12 +73,12 @@ function useFoodList() {
       setLoading(true);
       const response = await apiFetch(`${API_URL}/food`);
       const foods = await response.json();
-      const simplifiedFood: Food[] = foods.map((item: CompleteFood) => ({
-        id: item.id,
-        name: item.name,
-        category: item.food_group
-      }));
-      setFoodList(simplifiedFood);
+      // const simplifiedFood: Food[] = foods.map((item: CompleteFood) => ({
+      //   id: item.id,
+      //   name: item.name,
+      //   category: item.food_group
+      // }));
+      setFoodList(foods);
       setLoading(false);
     } catch (err: any) {
       console.error("Error fetching food:", err);
@@ -177,6 +190,120 @@ async function removeFoodRow(row: FoodRowDTO, committeeId: string, authorId: str
   return response;
 }
 
+function useFoodGroup(){
+  const apiFetch = useApi();
+  const [foodGroup, setFoodGroup] = useState<string[]>([]);
+  const [foodGroupLoading, setLoading] = useState(true);
+  const [foodGroupError, setError] = useState(null);
+  
+  const fetchFoodGroup = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await apiFetch(`${API_URL}/foodGroup`);
+      const categories = await response.json();
+        setFoodGroup(categories.success);
+        setLoading(false);
+      } catch (err: any) {
+        console.error("Error fetching food groups:", err);
+        setError(err);
+        setLoading(false);
+      }
+  }, [apiFetch]);
+
+  useEffect(() => {
+    fetchFoodGroup();
+  }, [fetchFoodGroup]);
+  
+  return { foodGroup, foodGroupLoading, foodGroupError };
+}
+
+function useSubFoodGroup(){
+  const apiFetch = useApi();
+  const [subFoodGroup, setFoodGroup] = useState<string[]>([]);
+  const [subFoodGroupLoading, setLoading] = useState(true);
+  const [suboodGroupError, setError] = useState(null);
+  
+  const fetchFoodGroup = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await apiFetch(`${API_URL}/subFoodGroup`);
+      const categories = await response.json();
+        setFoodGroup(categories.success);
+        setLoading(false);
+      } catch (err: any) {
+        console.error("Error fetching sub food groups:", err);
+        setError(err);
+        setLoading(false);
+      }
+  }, [apiFetch]);
+
+  useEffect(() => {
+    fetchFoodGroup();
+  }, [fetchFoodGroup]);
+  
+  return { subFoodGroup, subFoodGroupLoading, suboodGroupError };
+}
+
+function useUnits(){
+  const apiFetch = useApi();
+  const [units, setUnits] = useState<string[]>([]);
+  const [unitsLoading, setLoading] = useState(true);
+  const [unitsError, setError] = useState(null);
+  
+  const fetchUnits = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await apiFetch(`${API_URL}/units`);
+      const units = await response.json();
+        setUnits(units.success);
+        setLoading(false);
+      } catch (err: any) {
+        console.error("Error fetching food units:", err);
+        setError(err);
+        setLoading(false);
+      }
+  }, [apiFetch]);
+
+  useEffect(() => {
+    fetchUnits();
+  }, [fetchUnits]);
+  
+  return { units, unitsLoading, unitsError };
+}
+
+type ChangeFoodRequest = {
+  food: CompleteFood
+}
+
+async function request(requestKeyWord: string, route: string, bodyContent: ChangeFoodRequest, token: string){
+  const response = await fetch(`${API_URL}${route}`, {
+    method: `${requestKeyWord}`,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(bodyContent),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null);
+    throw new Error(errorBody?.message ?? `Request failed with status ${response.status}`);
+  }
+  return await response.json();
+}
+
+async function modifyFood(food: CompleteFood, token: string){
+  return request("POST","/modifyFood", {food: food}, token);
+}
+
+async function createFood(food: CompleteFood, token: string){
+  return request("POST","/createFood", {food: food}, token);
+}
+
+async function removeFood(food: CompleteFood, token: string){
+  return request("DELETE", "/removeFood", {food: food}, token)
+}
+
 function useFoodCategories(){
   const apiFetch = useApi();
   const [categoryList, setCategoryList] = useState<FoodCategory[]>([]);
@@ -237,3 +364,4 @@ function useFoodCategory(id: string | null){
 }
 
 export { useFoodList, useSavedFoodList, saveFoodRows, useFood, removeFoodRow, useFoodCategories, useFoodCategory }
+export { modifyFood, createFood, removeFood, useFoodGroup, useSubFoodGroup, useUnits }

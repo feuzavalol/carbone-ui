@@ -29,11 +29,14 @@ function ErrorMessage({ error }: {error: Error}) {
   );
 }
 
+const MissingTokenMessage = <div>Vous devez être connecté en tant qu'administrateur.ice ou listeux.se pour modifier les bilans carbone des listes et des assos.<br/>Veuillez vous reconnecter.</div>
+
+
 function MissingToken({token}:{token: string | null}){
   if (token == null){
-      return <div>Vous devez être connecté en tant qu'administrateur.ice ou listeux.se pour modifier les bilans carbone des listes et des assos.<br/>Veuillez vous reconnecter.</div>
+      return MissingTokenMessage
   }
   return null;
 }
 
-export { AsyncBoundary, useAsyncStatus, MissingToken }
+export { AsyncBoundary, useAsyncStatus, MissingToken, MissingTokenMessage }
