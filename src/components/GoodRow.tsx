@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { useState, useEffect } from "react";
+import { useAuth } from "../auth/AuthContext";
 import { useAsyncStatus } from "../fetching/ErrorHandling";
 import { ObjectSearchableDropdown } from "./Dropdown";
 import { useGood } from "../fetching/UseGood"
@@ -10,6 +11,7 @@ import "./style/Row.css";
 function GoodRow({ goods, data, onChange }: GoodRowProps) {
   const { id, goodId, name, category, quantity, co2Value } = data;
   const [ selectedGood, setSelectedGood ] = useState<Good | null>(null);
+  const { token } = useAuth();
 
   // Fetch good if the row is filled, i.e. the goodId != null
   const { good, loading, error } = useGood(goodId || null);
@@ -22,13 +24,17 @@ function GoodRow({ goods, data, onChange }: GoodRowProps) {
   }, [goodId, good]);
 
   if (status) return status;
+  if (token == null){
+    return <div>You're not logged in correctly...</div>
+  }
+  const safeToken: string = token;
   
 
   async function handleGoodSelect(good: Good) {
     setSelectedGood(good);
     onChange({ name: good.name, goodId: good.id, co2Value: null });
     if (quantity !== "" && quantity > 0) {
-      const result = await fetchGoodCarbonValue(good.id, quantity);
+      const result = await fetchGoodCarbonValue(good.id, quantity, safeToken);
       onChange({ co2Value: result });
     }
   }
@@ -37,7 +43,7 @@ function GoodRow({ goods, data, onChange }: GoodRowProps) {
     const qty = e.target.value === "" ? "" : parseFloat(e.target.value);
     onChange({ quantity: qty });
     if (goodId && qty !== "" && qty > 0) {
-      const result = await fetchGoodCarbonValue(goodId, qty);
+      const result = await fetchGoodCarbonValue(goodId, qty, safeToken);
       onChange({ co2Value: result });
     } else {
       onChange({ co2Value: null });
