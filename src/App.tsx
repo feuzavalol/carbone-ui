@@ -16,6 +16,11 @@ import { LoginPage } from "./pages/Login"
 import { RegisterPage } from "./pages/Register"
 import FoodSummary from "./pages/summary/FoodSummary"
 import GoodSummary from "./pages/summary/GoodSummary"
+import { OverviewDatabase } from "./pages/overview/OverviewDatabase"
+import FoodDatabase from "./pages/database/FoodDatabase"
+import FoodDetails from "./pages/database/FoodDetails"
+import GoodDatabase from "./pages/database/GoodDatabase"
+import GoodDetails from "./pages/database/GoodDetails"
 
 function App() {
   return (
@@ -40,7 +45,13 @@ function App() {
             <Route path="/listeByYear" element={<OverviewByYear />} />
             <Route path="/listes" element={<Overview />} />
             <Route path="/liste" element={<Liste />} />
-
+            <Route path="/db" element={<OverviewDatabase />} />
+            <Route path="/db/food" element={<FoodDatabase />} />
+            <Route path="/db/food/details" element={<FoodDetails />} />
+            <Route path="/db/food/create" element={<FoodDetails />} />
+            <Route path="/db/goods" element={<GoodDatabase />} />
+            <Route path="/db/goods/details" element={<GoodDetails />} />
+            <Route path="/db/goods/create" element={<GoodDetails />} />
           </Route>
         </Routes>
       </BrowserRouter>
