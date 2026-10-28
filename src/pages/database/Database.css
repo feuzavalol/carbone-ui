@@ -1,0 +1,12 @@
+.label-search-grid {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 1.2rem;
+}
+
+.input-search-grid {
+    font-size: 1.2rem;
+    padding: 8px 12px;
+    border: 2px solid #4c4c4c;
+    border-radius: 6px;
+}

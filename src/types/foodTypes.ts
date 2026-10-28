@@ -1,9 +1,9 @@
 type CompleteFood = {
   id: string,
   name: string,
-  cost_per_unit: Int16Array,
-  food_group: string,
-  sub_food_group: string,
+  costPerUnit: number,
+  foodGroup: string,
+  subFoodGroup: string,
   details: string | null,
   source: string | null,
   unit: string | null

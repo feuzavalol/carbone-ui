@@ -1,7 +1,7 @@
 type CompleteGood = {
   id: string,
   name: string,
-  cost_per_unit: Int16Array,
+  costPerUnit: number,
   category: string,
   details: string | null,
   source: string | null,

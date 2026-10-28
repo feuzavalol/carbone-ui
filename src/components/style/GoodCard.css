@@ -1,0 +1,49 @@
+.sheet-wrap {
+  overflow-x: auto;
+  border: 1px solid #c8ccd0;
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+}
+
+.sheet {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 700px;
+}
+
+.sheet th,
+.sheet td {
+  border: 1px solid #d9dcdf;
+  padding: 6px 10px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* column headers */
+.sheet thead th {
+  background: #f1f3f4;
+  font-weight: 600;
+  color: #3c4043;
+  position: sticky;
+  top: 0;
+}
+
+/* row numbers on the left */
+.sheet-rownum,
+.sheet-corner {
+  background: #f1f3f4;
+  color: #5f6368;
+  font-weight: 400;
+  text-align: center !important;
+  width: 36px;
+}
+
+.sheet tbody tr:hover td {
+  background: #f5f9ff;
+}
+
+.sheet td:focus-within,
+.sheet td:hover {
+  outline: 2px solid #1a73e8;
+  outline-offset: -2px;
+}

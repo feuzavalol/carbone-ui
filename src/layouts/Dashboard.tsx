@@ -22,8 +22,8 @@ function Dashboard() {
           <ul>
             <li><NavLink to="/home">Accueil</NavLink></li>
             <li><NavLink to="/login">Se connecter</NavLink></li>
-            <li><NavLink to="/register">Créer</NavLink></li>
             <li><NavLink to="/listeByYear">Listes/Assos</NavLink></li>
+            <li><NavLink to="/db">Database</NavLink></li>
           </ul>
         </nav>
         
