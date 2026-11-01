@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useYear } from "../../fetching/UseCommittee";
-import { MissingToken, useAsyncStatus } from "../../fetching/ErrorHandling";
+import { MissingToken, useAsyncStatus } from "../../fetching/helper/ErrorHandling";
 import { useAuth } from "../../auth/AuthContext";
 
 export default function OverviewByYear(){

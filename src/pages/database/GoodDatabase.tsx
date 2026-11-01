@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
-import { MissingToken, useAsyncStatus } from "../../fetching/ErrorHandling";
+import { MissingToken, useAsyncStatus } from "../../fetching/helper/ErrorHandling";
 import { useGoodList } from "../../fetching/UseGood";
 import type { CompleteGood } from "../../types/goodsTypes";
 import { GoodGrid } from "../../components/DatabaseCard";

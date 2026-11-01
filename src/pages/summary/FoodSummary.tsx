@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Summary } from "../../types/summaryTypes";
-import { useApi } from "../../fetching/useApi";
+import { useApi } from "../../fetching/helper/useApi";
 import { API_URL } from "../../constants/url";
-import { useAsyncStatus } from "../../fetching/ErrorHandling";
+import { useAsyncStatus } from "../../fetching/helper/ErrorHandling";
 import { PieChart } from "../../components/PieChart";
 import { toDisplay } from "../../constants/categories";
 

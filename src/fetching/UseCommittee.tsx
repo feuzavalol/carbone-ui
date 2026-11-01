@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import type { Committee } from "../types/committeeTypes";
-import { useApi } from "./useApi";
+import { useApi } from "./helper/useApi";
 import { API_URL } from "../constants/url";
 
 function useCommittee(id: string) {

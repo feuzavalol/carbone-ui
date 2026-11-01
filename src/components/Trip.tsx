@@ -1,5 +1,5 @@
 import { useState, useEffect, useId } from "react";
-import { useAsyncStatus } from "../fetching/ErrorHandling";
+import { useAsyncStatus } from "../fetching/helper/ErrorHandling";
 import { useRoute } from "../fetching/useTransport";
 import { Grid } from "../layouts/HelpCSS";
 import { energyOptions, convertEnergyCategoryToDisplay, getUnit, type Energy } from "../constants/energy";

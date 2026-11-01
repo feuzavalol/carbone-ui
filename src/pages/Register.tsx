@@ -6,7 +6,7 @@ import { adminRegisterRequest } from "../auth/authApi";
 import type { LoginResponse } from "../auth/authApi";
 import { type Role, type CommitteeCategory, NumberNeedingCategories } from "../constants/roles";
 import { useCommitteeCategories, useRoles } from "../fetching/UseCommittee";
-import { MissingToken, useAsyncStatus } from "../fetching/ErrorHandling";
+import { MissingToken, useAsyncStatus } from "../fetching/helper/ErrorHandling";
 import { emptyUser, type FilledUser, type User } from "../types/authTypes";
 
 

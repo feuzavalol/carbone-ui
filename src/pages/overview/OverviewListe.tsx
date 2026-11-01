@@ -4,7 +4,7 @@ import { useCommittees } from "../../fetching/UseCommittee";
 import type { Committee } from "../../types/committeeTypes";
 import type { AuthUser } from "../../types/authTypes";
 import { checkUser } from "../../auth/AuthUtil";
-import { useAsyncStatus } from "../../fetching/ErrorHandling";
+import { useAsyncStatus } from "../../fetching/helper/ErrorHandling";
 
 export default function Overview(){
     let navigate = useNavigate();

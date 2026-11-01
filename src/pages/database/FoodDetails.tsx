@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
-import { MissingTokenMessage, useAsyncStatus } from "../../fetching/ErrorHandling";
+import { MissingTokenMessage, useAsyncStatus } from "../../fetching/helper/ErrorHandling";
 import { useFood, modifyFood, createFood, useUnits, useFoodGroup, useSubFoodGroup } from "../../fetching/UseFood";
 import type { CompleteFood } from "../../types/foodTypes";
 import FoodForm from "../../components/FoodForm";

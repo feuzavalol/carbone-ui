@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAsyncStatus } from "../fetching/ErrorHandling";
+import { useAsyncStatus } from "../fetching/helper/ErrorHandling";
 import { decodeJwt, useAuth } from "../auth/AuthContext";
 import GoodRow from "../components/GoodRow";
 import { useGoodList, useSavedGoodList, saveGoodRows, removeGoodRow } from "../fetching/UseGood";

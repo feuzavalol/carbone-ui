@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../auth/AuthContext";
-import { useAsyncStatus } from "../fetching/ErrorHandling";
+import { useAsyncStatus } from "../fetching/helper/ErrorHandling";
 import { ObjectSearchableDropdown } from "./Dropdown";
 import { useGood } from "../fetching/UseGood"
 import type { GoodRowProps, Good } from "../types/goodsTypes"

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
-import { MissingTokenMessage, useAsyncStatus } from "../../fetching/ErrorHandling";
+import { MissingTokenMessage, useAsyncStatus } from "../../fetching/helper/ErrorHandling";
 import { useGood, useGoodCategories, useUnits, modifyGood, createGood } from "../../fetching/UseGood";
 import type { CompleteGood } from "../../types/goodsTypes";
 import GoodForm from "../../components/GoodForm";

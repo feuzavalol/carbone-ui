@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../auth/AuthContext";
-import { useAsyncStatus } from "../fetching/ErrorHandling";
+import { useAsyncStatus } from "../fetching/helper/ErrorHandling";
 import { ObjectSearchableDropdown } from "./Dropdown";
 import { useFood } from "../fetching/UseFood"
 import type { FoodRowProps, Food } from "../types/foodTypes"

@@ -4,7 +4,7 @@ import type { CompleteFood } from "../types/foodTypes";
 import { useNavigate } from "react-router-dom";
 import { removeFood } from "../fetching/UseFood";
 import { useAuth } from "../auth/AuthContext";
-import { MissingToken, MissingTokenMessage } from "../fetching/ErrorHandling";
+import { MissingToken, MissingTokenMessage } from "../fetching/helper/ErrorHandling";
 
 type ErrorsObject = {
   name: string,

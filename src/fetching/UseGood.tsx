@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import type { CompleteGood, GoodRowDTO, GoodRowPayload } from "../types/goodsTypes";
 import { API_URL } from "../constants/url";
-import { useApi } from "./useApi";
+import { useApi } from "./helper/useApi";
 import { useAuth } from "../auth/AuthContext";
 
 const EmptyGood: () => CompleteGood = () => {

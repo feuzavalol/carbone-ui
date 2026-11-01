@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { decodeJwt, useAuth } from "../auth/AuthContext";
 import { Grid } from "../layouts/HelpCSS";
-import { useAsyncStatus } from "../fetching/ErrorHandling";
+import { useAsyncStatus } from "../fetching/helper/ErrorHandling";
 import { ModeOfTransportation, RouteSelect } from "./Trip";
 import { useParty, saveParty } from "../fetching/useTransport";
 import type { TripRowDTO } from "../types/transportTypes";
