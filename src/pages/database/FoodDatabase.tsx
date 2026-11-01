@@ -15,7 +15,7 @@ export default function FoodDatabase(){
 
     const [search, setSearch] = useState('');
 
-    const {foodList, loading, error} = useFoodList();
+    const {foodList, loadingFoodList: loading, errorFoodList: error} = useFoodList();
 
     if (isMissing){return isMissing;}
     if (useAsyncStatus({loading, error})){return useAsyncStatus({loading, error});}
@@ -37,7 +37,7 @@ export default function FoodDatabase(){
                 onChange={(e) => setSearch(e.target.value)}
                 />
             </label>
-            <button onClick={goToCreateMenu}>Créer un nouveau bien</button>
+            <button onClick={goToCreateMenu}>Créer un nouvel aliment ou boisson</button>
             <FoodGrid foods={foodList.filter((item: CompleteFood) => {
                 return search.toLowerCase() === '' ? item : item.name.toLowerCase().includes(search);
             })}/>   
