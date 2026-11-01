@@ -18,8 +18,8 @@ function FoodCard({ food }: { food: CompleteFood }) {
     return (
         <div className="food-card" onClick={() => openDetails(food.id)}>
         <h3 className="food-card__name">{food.name}</h3>
-        <p className="food-card__category">{food.food_group}</p>
-        <span className="food-card__cost">{food.cost_per_unit}{food.unit}</span>
+        <p className="food-card__category">{food.foodGroup}</p>
+        <span className="food-card__cost">{food.costPerUnit}{food.unit}</span>
         </div>
     );
 }
