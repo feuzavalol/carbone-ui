@@ -53,4 +53,19 @@ type GoodItemRequest = {
   category: string;
 }
 
+const EmptyGood: () => CompleteGood = () => {
+    return {
+        id: "",
+        name: "",
+        costPerUnit: 0,
+        category: "",
+        details: "",
+        source: "",
+        comments: "",
+        unit: "",
+        expectedUnit: ""
+    }
+}
+
 export type { CompleteGood, Good, GoodRowProps, GoodRowDTO, GoodRowData, GoodRowPayload, GoodItemRequest };
+export { EmptyGood }
