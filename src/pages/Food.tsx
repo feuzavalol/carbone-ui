@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { useAsyncStatus } from "../fetching/ErrorHandling";
+import { useAsyncStatus } from "../fetching/helper/ErrorHandling";
 import { decodeJwt, useAuth } from "../auth/AuthContext";
 import FoodRow from "../components/FoodRow";
-import { useFoodList, useSavedFoodList, saveFoodRows, removeFoodRow, useFoodCategory } from "../fetching/UseFood";
+import { useFoodList, useSavedFoodList, useSaveFoodRows, useRemoveFoodRow, useFoodCategory } from "../fetching/UseFood";
 import type { Food, FoodRowDTO } from "../types/foodTypes"
 import { convertFoodCategoryToDisplay } from "../constants/categories";
 import TrashIcon from "../assets/trash.png";
+import type { saveFoodRowsAnswer } from "../types/Answers/foodItemAnswers";
 
 export default function Food(){ 
   const queryString = window.location.search;
@@ -15,12 +16,15 @@ export default function Food(){
   const fetchedFoodCategoryIdParam: string | null = urlParams.get('category');
 
   const { token } = useAuth();
+  const authorId: string = decodeJwt(token || "").id;
+  const { save } = useSaveFoodRows(fetchedCommitteeId || "", authorId);
+  const { remove } = useRemoveFoodRow(fetchedCommitteeId || "", authorId)
 
   const { fetchedFoodCategory, uniqueCategoryLoading, uniqueCategoryError } = useFoodCategory(fetchedFoodCategoryIdParam);
 
   const foodCategoryId: string | null = fetchedFoodCategory?.id ?? null;
 
-  const { foodList, loading, error } = useFoodList();
+  const { foodList, loadingFoodList: loading, errorFoodList: error } = useFoodList();
   const { savedFoodList, savedFoodLoading, savedFoodError } = useSavedFoodList(
     fetchedCommitteeId ?? "",
     foodCategoryId ?? ""
@@ -46,13 +50,11 @@ export default function Food(){
   if (token == null){
     return <div>You lost connection. You might want to relogin before doing this action.</div>
   }
-  const safeToken = token;
-  const authorId: string = decodeJwt(safeToken).id;
+  
 
   if (fetchedCommitteeId == null){
       return <div>Something went wrong when fetching the url parameter...<br/>The committee id parameter doesn't seem to be present</div>
   }
-  const committeeId: string = fetchedCommitteeId;
 
   if (fetchedFoodCategoryIdParam == null){
     return <div>Something went wrong when fetching the url parameter...<br/>The category parameter doesn't seem to be present</div>
@@ -90,7 +92,7 @@ export default function Food(){
     setIsSaving(true);
     setSaveError(null);
     try {
-      const savedFoodRows = await saveFoodRows(foodRowList, committeeId, authorId, safeToken);
+      const savedFoodRows: saveFoodRowsAnswer = await save(foodRowList);
       setFoodRowList(savedFoodRows.saved);
       // e.g. show a success toast, reset form, etc.
     } catch (err) {
@@ -103,7 +105,7 @@ export default function Food(){
   async function handleRemove() {
     try {
       if (removedItem !== null){
-        await removeFoodRow(removedItem, committeeId, authorId, safeToken);
+        await remove(removedItem);
         handleRemoveItem(removedItem);
       }
       // e.g. show a success toast, reset form, etc.

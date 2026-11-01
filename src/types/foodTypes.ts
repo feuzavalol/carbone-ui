@@ -57,4 +57,18 @@ type FoodCategory = {
   isListe: boolean
 }
 
+const EmptyFood: () => CompleteFood = () => {
+    return {
+        id: "",
+        name: "",
+        costPerUnit: 0,
+        foodGroup: "",
+        subFoodGroup: "",
+        source: "",
+        details: "",
+        unit: ""
+    }
+}
+
 export type { CompleteFood, Food, FoodRowProps, FoodRowDTO, FoodRowData, FoodRowPayload, FoodItemRequest, FoodCategory };
+export { EmptyFood }
