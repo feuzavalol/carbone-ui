@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import "./style/FoodForm.css";
 import type { CompleteFood } from "../types/foodTypes";
 import { useNavigate } from "react-router-dom";
-import { removeFood } from "../fetching/UseFood";
-import { useAuth } from "../auth/AuthContext";
-import { MissingToken, MissingTokenMessage } from "../fetching/helper/ErrorHandling";
+import { useRemoveFood } from "../fetching/UseFood";
+import { DeletionButtonAndPopUp, type ItemOrNull, type RemoveWrapper } from "./DeletionPopUp";
+import { Field, inputClass } from "./helper/FormHelper";
 
 type ErrorsObject = {
   name: string,
@@ -30,13 +30,6 @@ type Form = {
   subFoodGroup: string,
   details: string
 }
-
-type RemoveWrapper = {
-  isRemoving: boolean,
-  removeError : Error | null,
-  removedItem: CompleteFood | null
-}
-
 
 const isEmpty = (form: ErrorsObject | Form) => {
   return Object.values(form).every(x => x === null || x === '');
@@ -82,10 +75,9 @@ export default function FoodForm({
   alreadyExists,
   previousPage
 }: 
-{item: CompleteFood | undefined, unitOptions: string[], foodGroupOptions: string[], subFoodGroupOptions: string[], alreadyExists: boolean, onSubmit: (updatedItem: CompleteFood, isRemoving: boolean) => void, previousPage: string}) {
-  if (item == undefined){return;}
-  let navigate = useNavigate();
-  const { token } = useAuth();
+{item: CompleteFood, unitOptions: string[], foodGroupOptions: string[], subFoodGroupOptions: string[], alreadyExists: boolean, onSubmit: (updatedItem: CompleteFood, isRemoving: boolean) => void, previousPage: string}) {
+  const navigate = useNavigate();
+  const { mutate: removeFood } = useRemoveFood();
 
   const validate = alreadyExists ? () => validateExisting(form) : () => validateNew(form, unitOptions, foodGroupOptions, subFoodGroupOptions);
   // Keep cost as a string while editing so users can type "0." etc.
@@ -95,7 +87,7 @@ export default function FoodForm({
   const [errors, setErrors] = useState<ErrorsObject>(EmptyErrorsObject());
 
   // Handle the pop-up to delete the item from the db
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const [removeObject, setRemoveObject] = useState<RemoveWrapper>({isRemoving: false, removeError: null, removedItem: null})
 
   // Re-sync if a different item is passed in
@@ -103,11 +95,6 @@ export default function FoodForm({
     setForm(toForm(item));
     setErrors(EmptyErrorsObject());
   }, [item]);
-
-  if (token == null){
-      return MissingTokenMessage;
-  }
-  const safeToken: string = token;
 
   const hasChanged = Object.keys(form).some(
     (k) => String(form[k]) !== String(toForm(item)[k])
@@ -138,44 +125,11 @@ export default function FoodForm({
   const handleReset = () => {
     setForm(toForm(item));
     setErrors(EmptyErrorsObject());
-  };
+  };  
 
-  const changeRemoveObject = (name: string, value: string | null | CompleteFood | boolean) => {
-    setRemoveObject((prev: RemoveWrapper) => ({ ...prev, [name]: value }));
-  }
-
-  // Pop-up to delete the item from the database
-  const handleOpen = (removedFood: CompleteFood) => {
-    setRemoveObject((prev: RemoveWrapper) => ({ ...prev, removedItem: removedFood }));
-    setIsOpen(true)
-  };
-  const handleCancel = () => setIsOpen(false);
-
-  const handleRemoveItem = (removedElement: CompleteFood) => {
-    /*Removes the item inside the list displayed in the UI*/
+  const handleRemoveItem = (removedItem: ItemOrNull) => {
     navigate(previousPage);
-  };
-
-  async function handleRemove() {
-    if (removeObject.removedItem !== null){
-      let response;
-      try {
-        response = await removeFood(removeObject.removedItem, safeToken);
-        // e.g. show a success toast, reset form, etc.
-      } catch (err) {
-        changeRemoveObject("removeError", err instanceof Error ? err.message : "Something went wrong.");
-      } finally {
-        changeRemoveObject("removedItem", null);
-        setIsOpen(false);
-        if (response.success != null){
-          handleRemoveItem(removeObject.removedItem);
-        }
-        else {
-          changeRemoveObject("isRemoving", false);
-        }
-      }
-    }
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit} noValidate className="food-form">
@@ -283,27 +237,14 @@ export default function FoodForm({
       </Field>
       
       <div className="food-form__actions">
-        <button
-          type="button"
-          onClick={()=>handleOpen(form)}
-          disabled={!alreadyExists}
-          className="food-form__button food-form__button--secondary"
-        >
-          Delete
-        </button>
-        {/* Pop-up / Modal */}
-        {isOpen && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <h3>Êtes-vous sûr ?</h3>
-              <p>Voulez-vous vraiment supprimer cette ligne ?</p>
-              <div className="modal-actions">
-                <button onClick={handleCancel}>Annuler</button>
-                <button onClick={handleRemove}>Supprimer</button>
-              </div>
-            </div>
-          </div>
-        )}
+        <DeletionButtonAndPopUp 
+          alreadyExists={alreadyExists}
+          removeObject={removeObject}
+          form={form}
+          setRemoveObject={setRemoveObject}
+          onDeletion={removeFood}
+          afterDeletion={handleRemoveItem}
+        />
         <button
           type="button"
           onClick={handleReset}
@@ -324,15 +265,3 @@ export default function FoodForm({
   );
 }
 
-const inputClass = (hasError) =>
-  `food-form__input${hasError ? " food-form__input--error" : ""}`;
-
-function Field({ label, error, children }) {
-  return (
-    <label className="food-form__field">
-      <span className="food-form__label">{label}</span>
-      {children}
-      {error && <span className="food-form__error">{error}</span>}
-    </label>
-  );
-}

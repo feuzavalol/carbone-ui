@@ -4,6 +4,7 @@ import { useMutation } from "./helper/useMutation";
 import type { CompleteFood, FoodCategory, FoodRowDTO, FoodRowPayload } from "../types/foodTypes";
 import { EmptyFood } from "../types/foodTypes";
 import buildPath from "./helper/buildPath";
+import type { ChangeItemRequest } from "../types/Requests/ChangeItem";
 
 function useFood(foodId: string | null){
   const path = foodId ? buildPath("/singleFood", { foodId }) : null;
@@ -93,32 +94,24 @@ function useUnits(){
   return { units: data, unitsLoading: loading, unitsError: error };
 }
 
-type ChangeFoodRequest = {
-  food: CompleteFood
-}
+const useModifyFood = () => useMutation<ChangeItemRequest, unknown>("/modifyFood");
+const useCreateFood = () => useMutation<ChangeItemRequest, unknown>("/createFood");
+const useRemoveFood = () => useMutation<ChangeItemRequest, unknown>("/removeFood", "DELETE");
 
-function createChangeFoodRequest(food: CompleteFood){
-    return { food: food };
-}
+// function modifyFood(food: CompleteFood){
+//     const { mutate } = useModifyFood();
+//     return mutate(createChangeFoodRequest(food));
+// }
 
-const useModifyFood = () => useMutation<ChangeFoodRequest, unknown>("/modifyFood");
-const useCreateFood = () => useMutation<ChangeFoodRequest, unknown>("/createFood");
-const useRemoveFood = () => useMutation<ChangeFoodRequest, unknown>("/removeFood", "DELETE");
+// function createFood(food: CompleteFood){
+//     const { mutate } = useCreateFood();
+//     return mutate(createChangeFoodRequest(food));
+// }
 
-function modifyFood(food: CompleteFood){
-    const { mutate } = useModifyFood();
-    mutate(createChangeFoodRequest(food));
-}
-
-function createFood(food: CompleteFood){
-    const { mutate } = useCreateFood();
-    mutate(createChangeFoodRequest(food));
-}
-
-function removeFood(food: CompleteFood){
-    const { mutate } = useRemoveFood();
-    mutate(createChangeFoodRequest(food));
-}
+// function removeFood(food: CompleteFood){
+//     const { mutate } = useRemoveFood();
+//     return mutate(createChangeFoodRequest(food));
+// }
 
 function useFoodCategories(){
   const path: string | null = "/listeFoodCategories";
@@ -136,4 +129,4 @@ function useFoodCategory(id: string | null){
 
 export { useFoodList, useSavedFoodList, useSaveFoodRows, useFood, useRemoveFoodRow, useFoodCategories, useFoodCategory }
 export { useFoodGroup, useSubFoodGroup, useUnits }
-export { modifyFood, createFood, removeFood }
+export { useCreateFood, useModifyFood, useRemoveFood }

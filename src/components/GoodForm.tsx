@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
-import "./style/FoodForm.css";
+import { Field, inputClass } from "./helper/FormHelper";
 import type { CompleteGood } from "../types/goodsTypes";
+import "./style/FoodForm.css";
+import { DeletionButtonAndPopUp, type ItemOrNull, type RemoveWrapper } from "./DeletionPopUp";
+import { useRemoveGood } from "../fetching/UseGood";
+import { useNavigate } from "react-router-dom";
 
 type ErrorsObject = {
   name: string,
@@ -87,10 +91,12 @@ export default function GoodForm({
     expectedUnitOptions,
     categoryOptions,
     onSubmit,
-    alreadyExists // Whether the good already exists in the db or not
+    alreadyExists, // Whether the good already exists in the db or not
+    previousPage
 }: 
-{item: CompleteGood | undefined, expectedUnitOptions: string[], categoryOptions: string[], onSubmit: (updatedItem: CompleteGood) => void, alreadyExists: boolean}) {
-  if (item == undefined){return;}
+{item: CompleteGood | undefined, expectedUnitOptions: string[], categoryOptions: string[], onSubmit: (updatedItem: CompleteGood) => void, alreadyExists: boolean, previousPage: string}) {
+  const { mutate: removeGood } = useRemoveGood();
+  const navigate = useNavigate();
 
   const validate = alreadyExists ? () => validateExisting(form, categoryOptions) : () => validateNew(form, categoryOptions, expectedUnitOptions);
   const unitOptions = toUnitOptions(expectedUnitOptions);
@@ -99,6 +105,8 @@ export default function GoodForm({
 
   const [form, setForm] = useState(toForm(item));
   const [errors, setErrors] = useState<ErrorsObject>(EmptyErrorsObject());
+
+  const [removeObject, setRemoveObject] = useState<RemoveWrapper>({isRemoving: false, removeError: null, removedItem: null})
 
   // Re-sync if a different item is passed in
   useEffect(() => {
@@ -147,6 +155,10 @@ export default function GoodForm({
     setForm(toForm(item));
     setErrors(EmptyErrorsObject());
   };
+
+  const handleRemoveItem = (removedItem: ItemOrNull) => {
+    navigate(previousPage);
+  }
 
   return (
     <form onSubmit={handleSubmit} noValidate className="food-form">
@@ -265,6 +277,14 @@ export default function GoodForm({
       </Field>
 
       <div className="food-form__actions">
+        <DeletionButtonAndPopUp 
+          alreadyExists={alreadyExists}
+          removeObject={removeObject}
+          form={form}
+          setRemoveObject={setRemoveObject}
+          onDeletion={removeGood}
+          afterDeletion={handleRemoveItem}
+        />
         <button
           type="button"
           onClick={handleReset}
@@ -282,18 +302,5 @@ export default function GoodForm({
         </button>
       </div>
     </form>
-  );
-}
-
-const inputClass = (hasError) =>
-  `food-form__input${hasError ? " food-form__input--error" : ""}`;
-
-function Field({ label, error, children }) {
-  return (
-    <label className="food-form__field">
-      <span className="food-form__label">{label}</span>
-      {children}
-      {error && <span className="food-form__error">{error}</span>}
-    </label>
   );
 }

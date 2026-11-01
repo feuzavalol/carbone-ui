@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 import { MissingTokenMessage, useAsyncStatus } from "../../fetching/helper/ErrorHandling";
-import { useFood, modifyFood, createFood, useUnits, useFoodGroup, useSubFoodGroup } from "../../fetching/UseFood";
+import { useFood, useUnits, useFoodGroup, useSubFoodGroup, useCreateFood, useRemoveFood } from "../../fetching/UseFood";
 import type { CompleteFood } from "../../types/foodTypes";
 import FoodForm from "../../components/FoodForm";
+import { createChangeItemRequest } from "../../types/Requests/ChangeItem";
 
 
 export default function FoodDetails(){
@@ -19,12 +20,14 @@ export default function FoodDetails(){
     
     const { food, loading, error } = useFood(id);
     const alreadyExists = id != null;
+    const { mutate: createFood } = useCreateFood();
+    const { mutate: modifyFood } = useRemoveFood();
     const updateFoodDatabase = id != null ? modifyFood : createFood;
         
     
     const {units, unitsLoading, unitsError} = useUnits(); // ["kgCO2eq/unités","kgCO2eq/kg","kgCO2eq/L"];
     const { foodGroup, foodGroupLoading, foodGroupError } = useFoodGroup(); // [];
-    const { subFoodGroup, subFoodGroupLoading, suboodGroupError } = useSubFoodGroup()
+    const { subFoodGroup, subFoodGroupLoading, subFoodGroupError } = useSubFoodGroup()
 
     const [modifiedFood, setModifiedFood] = useState<CompleteFood>();
 
@@ -33,19 +36,16 @@ export default function FoodDetails(){
     }, [food])
 
     // const isMissing = MissingToken({token}); // Should be changed to something that is type compliant
-    if (token == null){
-        return MissingTokenMessage; // This early return is not
-    }
-    if (useAsyncStatus({loading, error})){return useAsyncStatus({loading, error});}
-    if (useAsyncStatus({loading: unitsLoading, error: unitsError})){
-        return useAsyncStatus({loading: unitsLoading, error: unitsError});
-    }
-    if (useAsyncStatus({loading: foodGroupLoading, error: foodGroupError})){
-        return useAsyncStatus({loading: foodGroupLoading, error: foodGroupError});
-    }
-    if (useAsyncStatus({loading: subFoodGroupLoading, error: suboodGroupError})){
-        return useAsyncStatus({loading: subFoodGroupLoading, error: suboodGroupError});
-    }
+    const foodStatus = useAsyncStatus({ loading, error });
+    const unitsStatus = useAsyncStatus({ loading: unitsLoading, error: unitsError });
+    const groupStatus = useAsyncStatus({ loading: foodGroupLoading, error: foodGroupError });
+    const subGroupStatus = useAsyncStatus({ loading: subFoodGroupLoading, error: subFoodGroupError });
+
+    if (token == null) return <MissingTokenMessage />;
+    if (foodStatus) return foodStatus;
+    if (unitsStatus) return unitsStatus;
+    if (groupStatus) return groupStatus;
+    if (subGroupStatus) return subGroupStatus;
 
     const goBackToOverview = () => {
         let path: string = actualPage;
@@ -54,10 +54,12 @@ export default function FoodDetails(){
 
     const onSubmit = (updated: CompleteFood, isRemoving: boolean) => {
         if (!isRemoving){
-            updateFoodDatabase(updated, token);
+            updateFoodDatabase(createChangeItemRequest(updated));
             goBackToOverview();
         }
-    };    
+    };
+
+    if (!modifiedFood) return null;
 
     return (
         <div>

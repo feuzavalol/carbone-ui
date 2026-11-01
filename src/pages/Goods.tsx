@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { useAsyncStatus } from "../fetching/helper/ErrorHandling";
 import { decodeJwt, useAuth } from "../auth/AuthContext";
 import GoodRow from "../components/GoodRow";
-import { useGoodList, useSavedGoodList, saveGoodRows, removeGoodRow } from "../fetching/UseGood";
+import { useGoodList, useSavedGoodList, useSaveGoodRows, useRemoveGoodRow } from "../fetching/UseGood";
 import type { GoodRowDTO } from "../types/goodsTypes"
 import TrashIcon from "../assets/trash.png"
+import type { saveGoodRowsAnswer } from "../types/Answers/goodItemAnswer";
 
 export default function Goods(){ 
   const queryString = window.location.search;
@@ -23,6 +24,9 @@ export default function Goods(){
       return <div>Something went wrong when fetching the url parameter...<br/>The committee id parameter doesn't seem to be present</div>
   }
   const committeeId: string = fetchedCommitteeId;
+
+  const { save } = useSaveGoodRows(committeeId, authorId);
+  const { remove } = useRemoveGoodRow(committeeId, authorId);
 
   const { goodList, loading, error } = useGoodList();
   const { savedGoodList, savedGoodLoading, savedGoodError } = useSavedGoodList(committeeId);
@@ -69,7 +73,7 @@ export default function Goods(){
     setIsSaving(true);
     setSaveError(null);
     try {
-      const savedGoodRows = await saveGoodRows(goodRowList, committeeId, authorId, safeToken);
+      const savedGoodRows: saveGoodRowsAnswer = await save(goodRowList);
       setGoodRowList(savedGoodRows.saved);
       // e.g. show a success toast, reset form, etc.
     } catch (err) {
@@ -88,7 +92,7 @@ export default function Goods(){
   async function handleRemove() {
     try {
       if (removedItem !== null){
-        const removedGoodRows = await removeGoodRow(removedItem, committeeId, authorId, safeToken);
+        await remove(removedItem);
         handleRemoveItem(removedItem);
       }
       // e.g. show a success toast, reset form, etc.
