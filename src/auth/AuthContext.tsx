@@ -7,6 +7,7 @@ import type { AuthContextValue, AuthUser, DecodedToken } from "../types/authType
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function decodeJwt(token: string): AuthUser {
+  if (token === ""){throw new Error("token is empty");}
   const decoded = jwtDecode<DecodedToken>(token);
   return { id: decoded.id, email: decoded.sub, role: decoded.role, committeeId: decoded.committeeId };
 }
