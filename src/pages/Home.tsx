@@ -3,11 +3,11 @@ import { decodeJwt } from "../auth/AuthContext";
 import type { AuthUser } from "../types/authTypes";
 import { AuthorisedRoles } from "../constants/roles";
 import { useFetch } from "../fetching/helper/useFetch";
-import { type baseAnswer, EmptyAnswer } from "../types/request";
+import { type BaseAnswer, EmptyAnswer } from "../types/request";
 
 function useAPIOnlineText() { // Test function to make sure the API in online
   const path: string = "/auth/test";
-  const { data, loading, error } = useFetch<baseAnswer>(path, EmptyAnswer());
+  const { data, loading, error } = useFetch<BaseAnswer<string>>(path, EmptyAnswer<string>());
   return { authenticatedValidationText: data.success, loading, error }
 };
 
