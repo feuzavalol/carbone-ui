@@ -6,24 +6,22 @@ import { useFoodList } from "../../fetching/UseFood";
 import { FoodGrid } from "../../components/DatabaseCard";
 import type { CompleteFood } from "../../types/foodTypes";
 import "./Database.css"
+import { useRouteChange } from "../../components/helper/onRouteChange";
 
 
 export default function FoodDatabase(){
+    const { goTo } = useRouteChange();
+    
     const { token } = useAuth();
-    let navigate = useNavigate();
-    const isMissing = MissingToken({token});
+    if (token == null){
+        return <div>You're not connected. You might want to relogin before doing this action.</div>
+    }
 
     const [search, setSearch] = useState('');
 
     const {foodList, loadingFoodList: loading, errorFoodList: error} = useFoodList();
 
-    if (isMissing){return isMissing;}
     if (useAsyncStatus({loading, error})){return useAsyncStatus({loading, error});}
-
-    const goToCreateMenu = () => {
-        let path: string = `/db/food/create`;
-        navigate(path);
-    }
 
     return (
         <div>
@@ -37,7 +35,7 @@ export default function FoodDatabase(){
                 onChange={(e) => setSearch(e.target.value)}
                 />
             </label>
-            <button onClick={goToCreateMenu}>Créer un nouvel aliment ou boisson</button>
+            <button onClick={() => goTo("/db/food/create")}>Créer un nouvel aliment ou boisson</button>
             <FoodGrid foods={foodList.filter((item: CompleteFood) => {
                 return search.toLowerCase() === '' ? item : item.name.toLowerCase().includes(search);
             })}/>   

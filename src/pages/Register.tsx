@@ -30,9 +30,9 @@ export function RegisterPage() {
   const status = useAsyncStatus({ loading: loadingCategories, error: errorCategories});
   const statusRoles = useAsyncStatus({ loading: loadingRoles, error: errorRoles });
 
-  const tokenMissing = MissingToken({token});
-
-  if (tokenMissing) {return tokenMissing;}
+  if (token == null){
+        return <div>You're not connected. You might want to relogin before doing this action.</div>
+  }
 
   if (status) { return status; }
   if (statusRoles) { return status; }

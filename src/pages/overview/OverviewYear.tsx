@@ -1,42 +1,32 @@
-import { useNavigate } from "react-router-dom";
 import { useYear } from "../../fetching/UseCommittee";
-import { MissingToken, useAsyncStatus } from "../../fetching/helper/ErrorHandling";
+import { useAsyncStatus } from "../../fetching/helper/ErrorHandling";
 import { useAuth } from "../../auth/AuthContext";
+import { useRouteChange } from "../../components/helper/onRouteChange";
+import buildPath from "../../fetching/helper/buildPath";
 
 export default function OverviewByYear(){
-    let navigate = useNavigate();
+    const { goTo } = useRouteChange();
 
-    const goTo = ({path, arg}:{path: string, arg: string | undefined}) => {
-        let finalPath: string;
-        if (arg != undefined){
-            finalPath = `${path}${arg}`;
-        }
-        else{
-            finalPath = `${path}`;
-        }
-        navigate(finalPath);
-    }
-
-    const { token } = useAuth();
     const { years, loading, error } = useYear();
 
+    const { token } = useAuth();
+    if (token == null){
+        return <div>You're not connected. You might want to relogin before doing this action.</div>
+    }
+
     const status = useAsyncStatus({ loading, error });
-    const tokenMissing = MissingToken({token});
 
-    if (tokenMissing) {return tokenMissing;}
     if (status) {return status;}
-
-    
 
     return (
         <div>
-            <button onClick={() => goTo({path: "/register"})}>
+            <button onClick={() => goTo("/register")}>
                 Créer un nouvel utilisateur
             </button>
             <br />
             {years.map((year: string) => (
                 <div key={year}>
-                    <button onClick={() => goTo({path: "/listes?year=", arg: year as string})}>
+                    <button onClick={() => goTo(buildPath("/listes", { year }))}>
                         {`${year}`}
                     </button>
                 </div>
