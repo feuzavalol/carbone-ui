@@ -113,8 +113,8 @@ const useRemoveFood = () => useMutation<ChangeItemRequest, unknown>("/removeFood
 //     return mutate(createChangeFoodRequest(food));
 // }
 
-function useFoodCategories(){
-  const path: string | null = "/listeFoodCategories";
+function useFoodCategories(committeeId: string | null){
+  const path: string | null = committeeId ? buildPath("/foodCategoriesByCommitteeId", { committeeId }) : null;;
   const { data, loading, error } = useFetch<FoodCategory[]>(path, []);
   
   return { categoryList: data, categoryLoading: loading, categoryError: error };
