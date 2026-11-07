@@ -7,4 +7,14 @@ type Committee = {
   year: number
 };
 
+const EmptyCommittee: () => Committee = () => {
+    return {
+      id: "",
+      category: "",
+      number: 0,
+      year: 0,
+    }
+  }
+
 export type { Committee }
+export { EmptyCommittee }
