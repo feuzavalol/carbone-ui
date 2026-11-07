@@ -39,3 +39,8 @@ export function useAuth(): AuthContextValue {
   if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 }
+
+export const isConnected = () => {
+  const {token} = useAuth();
+  return token != null && decodeJwt(token).role != "VIS";
+} 
