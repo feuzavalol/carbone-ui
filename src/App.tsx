@@ -2,8 +2,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { AuthProvider } from "./auth/AuthContext"
 import Dashboard from './layouts/Dashboard'
 import Home from './pages/Home'
-// import Vite from "./Vite"
-// import Users from "./pages/Users"
 import Food from './pages/Food'
 import Goods from "./pages/Goods"
 import Transport from './pages/Transport'
@@ -29,11 +27,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Dashboard />}>
-            {/* <Route index element={<Vite />} /> */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/home" element={<Home />} />
-            {/* <Route path="/users" element={<Users />} /> */}
             <Route path="/liste/food" element={<OverviewFood />} />
             <Route path="/liste/food/data" element={<OverviewFoodCategory />} />
             <Route path="/liste/food/data/moment" element={<Food />} />
