@@ -35,6 +35,9 @@ function convertFoodCategoryToDisplay(category: string){
         case "activities":
             return "Activités";
         default:
+            if (category.substring(0,9) == "MEAL_ASSO"){
+                return "Repas n°" + category.substring(9)
+            }
             return category;
     }
 }
