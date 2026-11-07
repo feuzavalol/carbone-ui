@@ -1,3 +1,5 @@
+import { useRouteChange } from "../../components/helper/onRouteChange";
+
 function AsyncBoundary({ loading, error, data, children, loadingFallback, errorFallback }) {
   if (loading) {
     return loadingFallback ?? <Spinner />;
@@ -30,10 +32,13 @@ function ErrorMessage({ error }: {error: Error}) {
 }
 
 function MissingTokenMessage() {
+  const { goTo } = useRouteChange();
   return (
     <div>
-      Vous devez être connecté en tant qu'administrateur.ice ou listeux.se pour modifier les bilans carbone des listes et des assos.
-      <br/>Veuillez vous reconnecter.
+      Vous devez être connecté en tant qu'administrateur.ice et/ou listeux.se pour faire cette action.
+      <br />Veuillez vous reconnecter.
+      <br />
+      <button onClick={() => goTo("/home")}>Accueil</button>
     </div>
   )
 }
