@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
-import { MissingToken, useAsyncStatus } from "../../fetching/helper/ErrorHandling";
+import { useAsyncStatus } from "../../fetching/helper/ErrorHandling";
 import { useFoodList } from "../../fetching/UseFood";
 import { FoodGrid } from "../../components/DatabaseCard";
 import type { CompleteFood } from "../../types/foodTypes";
