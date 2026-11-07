@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import "./style/FoodForm.css";
-import type { CompleteFood } from "../types/foodTypes";
-import { useNavigate } from "react-router-dom";
+import { Field, inputClass } from "./helper/FormHelper";
+import { useRouteChange } from "./helper/onRouteChange";
 import { useRemoveFood } from "../fetching/UseFood";
 import { DeletionButtonAndPopUp, type ItemOrNull, type RemoveWrapper } from "./DeletionPopUp";
-import { Field, inputClass } from "./helper/FormHelper";
+import type { CompleteFood } from "../types/foodTypes";
+import "./style/FoodForm.css";
 
 type ErrorsObject = {
   name: string,
@@ -76,7 +76,7 @@ export default function FoodForm({
   previousPage
 }: 
 {item: CompleteFood, unitOptions: string[], foodGroupOptions: string[], subFoodGroupOptions: string[], alreadyExists: boolean, onSubmit: (updatedItem: CompleteFood, isRemoving: boolean) => void, previousPage: string}) {
-  const navigate = useNavigate();
+  const { goTo } = useRouteChange();
   const { mutate: removeFood } = useRemoveFood();
 
   const validate = alreadyExists ? () => validateExisting(form) : () => validateNew(form, unitOptions, foodGroupOptions, subFoodGroupOptions);
@@ -128,7 +128,7 @@ export default function FoodForm({
   };  
 
   const handleRemoveItem = (removedItem: ItemOrNull) => {
-    navigate(previousPage);
+    goTo(previousPage);
   }
 
   return (

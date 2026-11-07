@@ -1,22 +1,17 @@
-import { useNavigate } from "react-router-dom";
 import type { CompleteFood } from "../types/foodTypes";
 import type { CompleteGood } from "../types/goodsTypes";
+import { useRouteChange } from "./helper/onRouteChange";
+import buildPath from "../fetching/helper/buildPath";
 import "./style/FoodCard.css";
 import "./style/GoodCard.css";
 
 type CompleteItem = CompleteFood | CompleteGood;
 
 function FoodCard({ food }: { food: CompleteFood }) {
-
-    let navigate = useNavigate();
-
-    const openDetails = (id: string | number) => {
-        let path: string = `/db/food/details?id=${id}`;
-        navigate(path);
-    }
+    const { goTo } = useRouteChange();
 
     return (
-        <div className="food-card" onClick={() => openDetails(food.id)}>
+        <div className="food-card" onClick={() => goTo(buildPath("/db/food/details", { id: food.id }))}>
         <h3 className="food-card__name">{food.name}</h3>
         <p className="food-card__category">{food.foodGroup}</p>
         <span className="food-card__cost">{food.costPerUnit}{food.unit}</span>
@@ -48,13 +43,7 @@ const COLUMNS = [
 // Accepts a single item object or an array of items.
 export default function ItemTable({ items = [] }: {items: CompleteItem[]}) {
   const rows = Array.isArray(items) ? items : [items];
-
-  let navigate = useNavigate();
-
-  const openDetails = (id: string | number) => {
-      let path: string = `/db/goods/details?id=${id}`;
-      navigate(path);
-  }
+  const { goTo } = useRouteChange();
 
   return (
     <div className="sheet-wrap" >
@@ -69,7 +58,7 @@ export default function ItemTable({ items = [] }: {items: CompleteItem[]}) {
         </thead>
         <tbody>
           {rows.map((item, i) => (
-            <tr key={i} onClick={() => openDetails(item["id"])}>
+            <tr key={i} onClick={() => goTo(buildPath("/db/goods/details",{ id: item.id }))}>
               <th className="sheet-rownum">{i + 1}</th>
               {COLUMNS.map((col) => (
                 <td key={col.key}>{item[col.key]}</td>

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 import { MissingTokenMessage, useAsyncStatus } from "../../fetching/helper/ErrorHandling";
 import { useFood, useUnits, useFoodGroup, useSubFoodGroup, useCreateFood, useRemoveFood } from "../../fetching/UseFood";
 import type { CompleteFood } from "../../types/foodTypes";
 import FoodForm from "../../components/FoodForm";
 import { createChangeItemRequest } from "../../types/Requests/ChangeItem";
+import { useRouteChange } from "../../components/helper/onRouteChange";
 
 
 export default function FoodDetails(){
@@ -15,8 +15,8 @@ export default function FoodDetails(){
     const id: string | null = urlParams.get('id');
     const actualPage = "/db/food";
 
+    const { goTo } = useRouteChange();
     const { token } = useAuth();
-    let navigate = useNavigate();
     
     const { food, loading, error } = useFood(id);
     const alreadyExists = id != null;
@@ -47,15 +47,10 @@ export default function FoodDetails(){
     if (groupStatus) return groupStatus;
     if (subGroupStatus) return subGroupStatus;
 
-    const goBackToOverview = () => {
-        let path: string = actualPage;
-        navigate(path);
-    } 
-
     const onSubmit = (updated: CompleteFood, isRemoving: boolean) => {
         if (!isRemoving){
             updateFoodDatabase(createChangeItemRequest(updated));
-            goBackToOverview();
+            goTo(actualPage);
         }
     };
 

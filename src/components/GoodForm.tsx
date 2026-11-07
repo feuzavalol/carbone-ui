@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Field, inputClass } from "./helper/FormHelper";
 import type { CompleteGood } from "../types/goodsTypes";
-import "./style/FoodForm.css";
 import { DeletionButtonAndPopUp, type ItemOrNull, type RemoveWrapper } from "./DeletionPopUp";
 import { useRemoveGood } from "../fetching/UseGood";
-import { useNavigate } from "react-router-dom";
+import { useRouteChange } from "./helper/onRouteChange";
+import "./style/FoodForm.css";
 
 type ErrorsObject = {
   name: string,
@@ -94,9 +94,9 @@ export default function GoodForm({
     alreadyExists, // Whether the good already exists in the db or not
     previousPage
 }: 
-{item: CompleteGood | undefined, expectedUnitOptions: string[], categoryOptions: string[], onSubmit: (updatedItem: CompleteGood) => void, alreadyExists: boolean, previousPage: string}) {
+{item: CompleteGood, expectedUnitOptions: string[], categoryOptions: string[], onSubmit: (updatedItem: CompleteGood) => void, alreadyExists: boolean, previousPage: string}) {
   const { mutate: removeGood } = useRemoveGood();
-  const navigate = useNavigate();
+  const { goTo } = useRouteChange();
 
   const validate = alreadyExists ? () => validateExisting(form, categoryOptions) : () => validateNew(form, categoryOptions, expectedUnitOptions);
   const unitOptions = toUnitOptions(expectedUnitOptions);
@@ -132,10 +132,6 @@ export default function GoodForm({
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
-//   useEffect(() => {
-//     console.log(form);
-//   }, [form])
-
   const handleSubmit = (e) => {
     e.preventDefault();
     const result = validate();
@@ -157,7 +153,7 @@ export default function GoodForm({
   };
 
   const handleRemoveItem = (removedItem: ItemOrNull) => {
-    navigate(previousPage);
+    goTo(previousPage);
   }
 
   return (

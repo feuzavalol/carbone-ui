@@ -1,11 +1,7 @@
-import { useNavigate } from "react-router-dom";
+import { useRouteChange } from "../../components/helper/onRouteChange";
 
 const OverviewDatabase = () => {
-    let navigate = useNavigate();
-    const onRouteChange = (label: string) => {
-        let path: string = `/db/${label}`;
-        navigate(path);
-    }
+    const { goTo } = useRouteChange();
 
     var title: string = "Base de données de l'outil"
     // const displayedLabel = convertCategoryToDisplay(label);
@@ -15,9 +11,9 @@ const OverviewDatabase = () => {
     return (
         <div>
             <h1>{title}</h1>
-            <button onClick={()=>onRouteChange("food")}>Alimentation</button>
+            <button onClick={()=>goTo("/db/food")}>Alimentation</button>
             <br />
-            <button onClick={()=>onRouteChange("goods")}>Biens</button>
+            <button onClick={()=>goTo("/db/goods")}>Biens</button>
         </div>
     )
 }

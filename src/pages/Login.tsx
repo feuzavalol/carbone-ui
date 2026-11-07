@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { baseRegisterRequest } from "../auth/authApi";
+import { useRouteChange } from "../components/helper/onRouteChange";
 
 type Mode = "login" | "register";
 
 export function LoginPage() {
   const { login } = useAuth();
-  const navigate = useNavigate();
+  const { goTo } = useRouteChange();
 
   const [mode, setMode] = useState<Mode>("login");
   const [name, setName] = useState("");
@@ -23,11 +23,11 @@ export function LoginPage() {
     try {
       if (mode === "login"){
         await login(email, password);
-        navigate("/home");
+        goTo("/home");
       }
       else{
         await baseRegisterRequest(name, email, password);
-        navigate("/home");
+        goTo("/home");
       }
     } catch (err) {
         setError("L'email ou le mot de passe sont incorrects");
