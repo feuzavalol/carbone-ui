@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
 import { useRouteChange } from "../../components/helper/onRouteChange";
-import { useAsyncStatus } from "../../fetching/helper/ErrorHandling";
+import { MissingTokenMessage, useAsyncStatus } from "../../fetching/helper/ErrorHandling";
 import { useGoodList } from "../../fetching/UseGood";
 import type { CompleteGood } from "../../types/goodsTypes";
 import { GoodGrid } from "../../components/DatabaseCard";
@@ -12,9 +12,7 @@ export default function GoodDatabase(){
     const { goTo } = useRouteChange();
     
     const { token } = useAuth();
-    if (token == null){
-        return <div>You're not connected. You might want to relogin before doing this action.</div>
-    }
+    if (token == null) return <MissingTokenMessage />;
 
     const [search, setSearch] = useState('');
 

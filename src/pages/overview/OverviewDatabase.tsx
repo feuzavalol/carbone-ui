@@ -1,7 +1,12 @@
+import { useAuth } from "../../auth/AuthContext";
 import { useRouteChange } from "../../components/helper/onRouteChange";
+import { MissingTokenMessage } from "../../fetching/helper/ErrorHandling";
 
 const OverviewDatabase = () => {
     const { goTo } = useRouteChange();
+
+    const { token } = useAuth();
+    if (token == null) return <MissingTokenMessage />;
 
     var title: string = "Base de données de l'outil"
     // const displayedLabel = convertCategoryToDisplay(label);

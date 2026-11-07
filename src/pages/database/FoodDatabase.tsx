@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
-import { useAsyncStatus } from "../../fetching/helper/ErrorHandling";
+import { MissingTokenMessage, useAsyncStatus } from "../../fetching/helper/ErrorHandling";
 import { useFoodList } from "../../fetching/UseFood";
 import { FoodGrid } from "../../components/DatabaseCard";
 import type { CompleteFood } from "../../types/foodTypes";
@@ -12,9 +12,7 @@ export default function FoodDatabase(){
     const { goTo } = useRouteChange();
     
     const { token } = useAuth();
-    if (token == null){
-        return <div>You're not connected. You might want to relogin before doing this action.</div>
-    }
+    if (token == null) return <MissingTokenMessage />;
 
     const [search, setSearch] = useState('');
 

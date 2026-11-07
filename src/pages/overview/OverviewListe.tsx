@@ -3,7 +3,7 @@ import { useCommittees } from "../../fetching/UseCommittee";
 import type { Committee } from "../../types/committeeTypes";
 import type { AuthUser } from "../../types/authTypes";
 import { checkUser } from "../../auth/AuthUtil";
-import { useAsyncStatus } from "../../fetching/helper/ErrorHandling";
+import { MissingTokenMessage, useAsyncStatus } from "../../fetching/helper/ErrorHandling";
 import { mainTitle } from "../../constants/committees";
 import { useRouteChange } from "../../components/helper/onRouteChange";
 import buildPath from "../../fetching/helper/buildPath";
@@ -25,9 +25,7 @@ export default function Overview(){
 
     if (status) {return status;}
 
-    if (token == null){
-        return <div>You're not connected. You might want to relogin before doing this action.</div>
-    }
+    if (token == null) return <MissingTokenMessage />;
     const safeToken = token;
     const user: AuthUser = decodeJwt(safeToken);
 

@@ -1,5 +1,5 @@
 import { useYear } from "../../fetching/UseCommittee";
-import { useAsyncStatus } from "../../fetching/helper/ErrorHandling";
+import { MissingTokenMessage, useAsyncStatus } from "../../fetching/helper/ErrorHandling";
 import { useAuth } from "../../auth/AuthContext";
 import { useRouteChange } from "../../components/helper/onRouteChange";
 import buildPath from "../../fetching/helper/buildPath";
@@ -10,9 +10,7 @@ export default function OverviewByYear(){
     const { years, loading, error } = useYear();
 
     const { token } = useAuth();
-    if (token == null){
-        return <div>You're not connected. You might want to relogin before doing this action.</div>
-    }
+    if (token == null) return <MissingTokenMessage />;
 
     const status = useAsyncStatus({ loading, error });
 

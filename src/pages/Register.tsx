@@ -6,7 +6,7 @@ import { adminRegisterRequest } from "../auth/authApi";
 import type { LoginResponse } from "../auth/authApi";
 import { type Role, type CommitteeCategory, NumberNeedingCategories } from "../constants/roles";
 import { useCommitteeCategories, useRoles } from "../fetching/UseCommittee";
-import { MissingToken, useAsyncStatus } from "../fetching/helper/ErrorHandling";
+import { MissingTokenMessage, useAsyncStatus } from "../fetching/helper/ErrorHandling";
 import { emptyUser, type FilledUser, type User } from "../types/authTypes";
 
 
@@ -30,9 +30,7 @@ export function RegisterPage() {
   const status = useAsyncStatus({ loading: loadingCategories, error: errorCategories});
   const statusRoles = useAsyncStatus({ loading: loadingRoles, error: errorRoles });
 
-  if (token == null){
-        return <div>You're not connected. You might want to relogin before doing this action.</div>
-  }
+  if (token == null) return <MissingTokenMessage />;
 
   if (status) { return status; }
   if (statusRoles) { return status; }
