@@ -1,157 +1,44 @@
-import { useEffect, useState, useCallback } from "react";
-import type { Committee } from "../types/committeeTypes";
-import { useApi } from "./helper/useApi";
-import { API_URL } from "../constants/url";
+import { EmptyCommittee, type Committee } from "../types/committeeTypes";
+import buildPath from "./helper/buildPath";
+import { useFetch } from "./helper/useFetch";
 
-function useCommittee(id: string) {
-  const apiFetch = useApi();
-  const [committee, setCommittee] = useState<Committee>({
-    id: "",
-    category: "",
-    number: 0,
-    year: 0,
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  const fetchCommittee = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await apiFetch(`${API_URL}/committee?id=${id}`);
-      const data = await response.json();
-      setCommittee(data);
-    } catch (err) {
-      console.error("Error fetching committee:", err);
-      setError(err as Error);
-    } finally {
-      setLoading(false);
-    }
-  }, [apiFetch, id]);
-
-  useEffect(() => {
-    fetchCommittee();
-  }, [fetchCommittee]);
-
-  return { committee, loading, error };
+function useCommittee(id: string | null) {
+  const path = id ? buildPath("/committee", { id }) : null;
+  const { data, loading, error } = useFetch<Committee | null>(path, EmptyCommittee());
+  
+  return { committee: data || EmptyCommittee(), loading, error };
 }
 
 function useCommittees(year: string | number | null) {
-    const apiFetch = useApi();
-    const [committees, setCommittees] = useState<Committee[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
-    
-
-    const fetchCommitteeList = useCallback(async () => {
-    try {
-      if (year == null){
-        return;
-      }
-      setLoading(true);
-      const response = await apiFetch(`${API_URL}/committees?year=${year}`);
-      const data = await response.json();
-      setCommittees(data[`${year}`]);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error fetching committee:", err);
-      setError(err as Error);
-    } finally {
-      setLoading(false);
-    }
-  }, [apiFetch, year]);
-
-  useEffect(() => {
-    fetchCommitteeList();
-  }, [fetchCommitteeList]);
-    
-  return { committees, loading, error };
+  const path = year ? buildPath("/committees", { year }) : null;
+  const { data, loading, error } = useFetch<Committee[]>(path, []);
+  
+  return { committees: data, loading, error };
 };
 
 function useYear(){
-  const apiFetch = useApi();
-    const [years, setYears] = useState<string[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
-    
-
-    const fetchYears = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await apiFetch(`${API_URL}/years`);
-      const data = await response.json();
-      setYears(data.success);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error fetching years:", err);
-      setError(err as Error);
-    } finally {
-      setLoading(false);
-    }
-  }, [apiFetch]);
-
-  useEffect(() => {
-    fetchYears();
-  }, [fetchYears]);
-    
-  return { years, loading, error };
+  const path = "/years"
+  const { data, loading, error } = useFetch<string[]>(path, []);    
+  return { years: data, loading, error };
 }
 
 function useRoles(year: string | number | null){
-  const apiFetch = useApi();
-  const [roles, setRoles] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  
-
-  const fetchYears = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await apiFetch(`${API_URL}/roles?year=${year}`);
-      const data = await response.json();
-      setRoles(data.success);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error fetching roles:", err);
-      setError(err as Error);
-    } finally {
-      setLoading(false);
-    }
-  }, [apiFetch]);
-
-  useEffect(() => {
-    fetchYears();
-  }, [fetchYears]);
-    
-  return { roles, loadingRoles: loading, errorRoles: error };
+  const path = year ? buildPath("/roles", { year }) : null;
+  const { data, loading, error } = useFetch<string[]>(path, []); 
+  return { roles: data, loadingRoles: loading, errorRoles: error };
 }
 
 function useCommitteeCategories(year: string | number | null){
-  const apiFetch = useApi();
-  const [categories, setCategories] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  
-
-  const fetchCategories = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await apiFetch(`${API_URL}/categories?year=${year}`);
-      const data = await response.json();
-      setCategories(data.success);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error fetching roles:", err);
-      setError(err as Error);
-    } finally {
-      setLoading(false);
-    }
-  }, [apiFetch]);
-
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
-    
-  return { categories, loadingCategories: loading, errorCategories: error };
+  const path = year ? buildPath("/categories", { year }) : null;
+  const { data, loading, error } = useFetch<string[]>(path, []); 
+  return { categories: data, loadingCategories: loading, errorCategories: error };
 }
 
-export { useCommittee, useCommittees, useYear, useRoles, useCommitteeCategories }
+function useIsListe(committeeId : string | null){
+  const path: string | null = committeeId ? buildPath("/isListe", { committeeId }) : null;;
+  const { data, loading, error } = useFetch<boolean>(path, false);
+  
+  return { isListe: data, loading, error };
+}
+
+export { useCommittee, useCommittees, useYear, useRoles, useCommitteeCategories, useIsListe }
