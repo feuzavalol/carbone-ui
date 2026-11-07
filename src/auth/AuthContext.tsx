@@ -44,3 +44,10 @@ export const isConnected = () => {
   const {token} = useAuth();
   return token != null && decodeJwt(token).role != "VIS";
 } 
+
+export const isAdmin = () => {
+  const { token } = useAuth();
+  if (token == null){return false;}
+  const user: AuthUser = decodeJwt(token);
+  return user.role != "VIS" && user.role != "LIS";
+}
