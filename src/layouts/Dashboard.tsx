@@ -1,18 +1,8 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
+import { NavLink, Outlet } from "react-router-dom";
+import { isConnected } from "../auth/AuthContext";
 import "./Dashboard.css"
-import { useEffect } from "react";
 
 function Dashboard() {
-  const { token } = useAuth()
-  const navigate = useNavigate();
-
-  useEffect(() => {
-      if (token == null){
-        navigate("/login")
-      }
-    }, [token]);
-
   
   return (
     <>
@@ -20,10 +10,15 @@ function Dashboard() {
         <nav className="navbar">
           <h1>Outil carbone des Mines</h1>
           <ul>
-            <li><NavLink to="/home">Accueil</NavLink></li>
-            <li><NavLink to="/login">Se connecter</NavLink></li>
-            <li><NavLink to="/listeByYear">Listes/Assos</NavLink></li>
-            <li><NavLink to="/db">Database</NavLink></li>
+            {
+            isConnected() && 
+              <>
+                <li><NavLink to="/home">Accueil</NavLink></li>
+                <li><NavLink to="/listeByYear">Listes/Assos</NavLink></li>
+                <li><NavLink to="/db">Database</NavLink></li>
+              </>
+            }
+            { !isConnected() && <li><NavLink to="/login">Se connecter</NavLink></li> }
           </ul>
         </nav>
         
