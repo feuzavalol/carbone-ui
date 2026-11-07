@@ -10,7 +10,7 @@ function useFood(foodId: string | null){
   const path = foodId ? buildPath("/singleFood", { foodId }) : null;
   const { data, loading, error } = useFetch<CompleteFood | null>(path, null);
   
-  return { food: data || EmptyFood, loading, error };
+  return { food: data || EmptyFood(), loading, error };
 }
 
 function useFoodList() {

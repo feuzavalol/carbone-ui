@@ -11,7 +11,7 @@ function useGood(goodId: string | null){
   const path = goodId ? buildPath("/singleGood", { goodId }) : null;
   const { data, loading, error } = useFetch<CompleteGood | null>(path, null);
   
-  return { good: data || EmptyGood, loading, error };
+  return { good: data || EmptyGood(), loading, error };
 }
 
 function useGoodList() {
@@ -39,7 +39,6 @@ const useRemoveGood = () => useMutation<ChangeItemRequest, unknown>("/removeGood
 function useSavedGoodList(committeeId: string){
   const path = committeeId ? buildPath("/goodItem", { committeeId }) : null;
   const { data, loading, error } = useFetch<GoodRowDTO[]>(path, [], (j) => j.success);
-  console.log("Previously saved: ", data);
   return { savedGoodList: data, savedGoodLoading: loading, savedGoodError: error };
 }  
 
