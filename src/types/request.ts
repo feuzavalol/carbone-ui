@@ -1,12 +1,10 @@
-type baseAnswer = {
-    success: string,
+type BaseAnswer<T> = {
+  success?: T;
+};
+
+function EmptyAnswer<T>(): BaseAnswer<T> {
+  return {};
 }
 
-const EmptyAnswer: () => baseAnswer = () => {
-    return {
-        success: ""
-    }
-}
-
-export type { baseAnswer }
+export type { BaseAnswer }
 export { EmptyAnswer }

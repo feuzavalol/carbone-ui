@@ -1,4 +1,5 @@
 import { EmptyCommittee, type Committee } from "../types/committeeTypes";
+import { EmptyAnswer, type BaseAnswer } from "../types/request";
 import buildPath from "./helper/buildPath";
 import { useFetch } from "./helper/useFetch";
 
@@ -11,27 +12,27 @@ function useCommittee(id: string | null) {
 
 function useCommittees(year: string | number | null) {
   const path = year ? buildPath("/committees", { year }) : null;
-  const { data, loading, error } = useFetch<Committee[]>(path, []);
+  const { data, loading, error } = useFetch<BaseAnswer<Committee[]>>(path, EmptyAnswer<[]>());
   
-  return { committees: data, loading, error };
+  return { committees: data.success || [], loading, error };
 };
 
 function useYear(){
   const path = "/years"
-  const { data, loading, error } = useFetch<string[]>(path, []);    
-  return { years: data, loading, error };
+  const { data, loading, error } = useFetch<BaseAnswer<string[]>>(path, EmptyAnswer<[]>());    
+  return { years: data.success || [], loading, error };
 }
 
 function useRoles(year: string | number | null){
   const path = year ? buildPath("/roles", { year }) : null;
-  const { data, loading, error } = useFetch<string[]>(path, []); 
-  return { roles: data, loadingRoles: loading, errorRoles: error };
+  const { data, loading, error } = useFetch<BaseAnswer<string[]>>(path, EmptyAnswer<[]>());  
+  return { roles: data.success || [], loadingRoles: loading, errorRoles: error };
 }
 
 function useCommitteeCategories(year: string | number | null){
   const path = year ? buildPath("/categories", { year }) : null;
-  const { data, loading, error } = useFetch<string[]>(path, []); 
-  return { categories: data, loadingCategories: loading, errorCategories: error };
+  const { data, loading, error } = useFetch<BaseAnswer<string[]>>(path, EmptyAnswer<[]>());  
+  return { categories: data.success || [], loadingCategories: loading, errorCategories: error };
 }
 
 function useIsListe(committeeId : string | null){
