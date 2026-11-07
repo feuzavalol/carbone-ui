@@ -21,6 +21,7 @@ import FoodDatabase from "./pages/database/FoodDatabase"
 import FoodDetails from "./pages/database/FoodDetails"
 import GoodDatabase from "./pages/database/GoodDatabase"
 import GoodDetails from "./pages/database/GoodDetails"
+import TransportSummary from "./pages/summary/TransportSummary"
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
             <Route path="/liste/food/summary" element={<FoodSummary />} />
             <Route path="/liste/transport" element={<OverviewTransport />} />
             <Route path="/liste/transport/data" element={<Transport />} />
+            <Route path="/liste/transport/summary" element={<TransportSummary />} />
             <Route path="/liste/goods" element={<OverviewGoods />} />
             <Route path="/liste/goods/data" element={<Goods />} />
             <Route path="/liste/goods/summary" element={<GoodSummary />} />
