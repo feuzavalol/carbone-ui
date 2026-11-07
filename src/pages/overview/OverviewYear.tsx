@@ -1,6 +1,6 @@
 import { useYear } from "../../fetching/UseCommittee";
 import { MissingTokenMessage, useAsyncStatus } from "../../fetching/helper/ErrorHandling";
-import { useAuth } from "../../auth/AuthContext";
+import { isAdmin, useAuth } from "../../auth/AuthContext";
 import { useRouteChange } from "../../components/helper/onRouteChange";
 import buildPath from "../../fetching/helper/buildPath";
 
@@ -18,10 +18,15 @@ export default function OverviewByYear(){
 
     return (
         <div>
-            <button onClick={() => goTo("/register")}>
-                Créer un nouvel utilisateur
-            </button>
-            <br />
+            <h2>Les années</h2>
+            { isAdmin() && 
+            <>
+                <button onClick={() => goTo("/register")}>
+                    Créer un nouvel utilisateur
+                </button>
+                <br />
+            </>}
+            
             {years.map((year: string) => (
                 <div key={year}>
                     <button onClick={() => goTo(buildPath("/listes", { year }))}>

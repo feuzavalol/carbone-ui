@@ -4,7 +4,7 @@ import type { Committee } from "../../types/committeeTypes";
 import type { AuthUser } from "../../types/authTypes";
 import { checkUser } from "../../auth/AuthUtil";
 import { MissingTokenMessage, useAsyncStatus } from "../../fetching/helper/ErrorHandling";
-import { mainTitle } from "../../constants/committees";
+import { secondaryTitle } from "../../constants/committees";
 import { useRouteChange } from "../../components/helper/onRouteChange";
 import buildPath from "../../fetching/helper/buildPath";
 
@@ -28,13 +28,17 @@ export default function Overview(){
     if (token == null) return <MissingTokenMessage />;
     const safeToken = token;
     const user: AuthUser = decodeJwt(safeToken);
+    const displayedCommittees = committees.filter((committee: Committee) => checkUser(user,committee.id));
+    const isCommitteeListEmpty = displayedCommittees.length == 0;
 
     return (
         <div>
-            {committees.filter((committee: Committee) => checkUser(user,committee.id)).map((committee: Committee) => (
+            <h2>En {year} :</h2>
+            { isCommitteeListEmpty && <div>Vous n'avez pas accès à la modification de listes/assos de cette année</div>}
+            {displayedCommittees.map((committee: Committee) => (
                 <div key={committee.id}>
                     <button onClick={() => goTo(buildPath("/liste",{ id: committee.id }))} >
-                        {mainTitle(committee)}
+                        {secondaryTitle(committee)}
                     </button>
                 </div>
             ))}

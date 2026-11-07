@@ -1,9 +1,14 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { isConnected } from "../auth/AuthContext";
+import { isAdmin, isConnected } from "../auth/AuthContext";
 import "./Dashboard.css"
 
 function Dashboard() {
-  
+  const mainDashboard = 
+    <>
+      <li><NavLink to="/home">Accueil</NavLink></li>
+      <li><NavLink to="/listeByYear">Listes/Assos</NavLink></li>
+      <li><NavLink to="/db">Database</NavLink></li>
+    </>;
   return (
     <>
       <div className="dashboard">
@@ -12,12 +17,9 @@ function Dashboard() {
           <ul>
             {
             isConnected() && 
-              <>
-                <li><NavLink to="/home">Accueil</NavLink></li>
-                <li><NavLink to="/listeByYear">Listes/Assos</NavLink></li>
-                <li><NavLink to="/db">Database</NavLink></li>
-              </>
+              mainDashboard
             }
+            { isAdmin() && <li><NavLink to="/register">Add user</NavLink></li> }
             { !isConnected() && <li><NavLink to="/login">Se connecter</NavLink></li> }
           </ul>
         </nav>
